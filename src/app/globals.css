@@ -1,0 +1,20 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --font-racing: "Orbitron", system-ui, sans-serif;
+    --font-body: "Inter", system-ui, sans-serif;
+  }
+
+  body {
+    @apply min-h-screen;
+  }
+}
+
+@layer utilities {
+  .text-glow-neon {
+    text-shadow: 0 0 12px theme("colors.nfs.neon");
+  }
+}

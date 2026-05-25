@@ -1,0 +1,7 @@
+/* Design tokens — sincronizar con tailwind.config.ts si se usan CSS vars */
+:root {
+  --color-nfs-neon: #00f0ff;
+  --color-nfs-asphalt: #0a0a0f;
+  --color-nfs-chrome: #c0c5ce;
+  --color-nfs-heat: #ff3d00;
+}

@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "@/app/globals.css";
+import { ElectronicArtsBar } from "@/components/layout/ElectronicArtsBar";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
 
@@ -22,7 +23,10 @@ export default function RootLayout({
   return (
     <html lang="es">
       <body className={`${inter.variable} font-body antialiased bg-nfs-asphalt text-white`}>
-        <SiteHeader />
+        <div className="sticky top-0 z-50">
+          <ElectronicArtsBar />
+          <SiteHeader />
+        </div>
         <main>{children}</main>
         <SiteFooter />
       </body>

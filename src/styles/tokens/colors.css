@@ -1,6 +1,7 @@
-/* Design tokens — sincronizar con tailwind.config.ts si se usan CSS vars */
+/* Design tokens — --color-nfs-neon se actualiza desde Ajustes (SettingsContext) */
 :root {
   --color-nfs-neon: #00f0ff;
+  --nfs-neon-rgb: 0 240 255;
   --color-nfs-asphalt: #0a0a0f;
   --color-nfs-chrome: #c0c5ce;
   --color-nfs-heat: #ff3d00;

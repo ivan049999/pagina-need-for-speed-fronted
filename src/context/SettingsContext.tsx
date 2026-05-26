@@ -10,6 +10,10 @@ import {
   type ReactNode,
 } from "react";
 import {
+  applyNeonColorToDocument,
+  normalizeHexColor,
+} from "@/lib/settings/neon-color";
+import {
   DEFAULT_SETTINGS,
   SETTINGS_STORAGE_KEY,
   type AppSettings,
@@ -28,7 +32,9 @@ function loadSettings(): AppSettings {
   try {
     const raw = localStorage.getItem(SETTINGS_STORAGE_KEY);
     if (!raw) return DEFAULT_SETTINGS;
-    return { ...DEFAULT_SETTINGS, ...JSON.parse(raw) };
+    const parsed = { ...DEFAULT_SETTINGS, ...JSON.parse(raw) } as AppSettings;
+    parsed.neonColor = normalizeHexColor(parsed.neonColor);
+    return parsed;
   } catch {
     return DEFAULT_SETTINGS;
   }
@@ -37,6 +43,7 @@ function loadSettings(): AppSettings {
 function applySettingsToDocument(settings: AppSettings) {
   const root = document.documentElement;
   root.style.setProperty("--nfs-ui-brightness", `${settings.uiBrightness}%`);
+  applyNeonColorToDocument(settings.neonColor);
   root.classList.toggle("nfs-reduced-motion", settings.reducedMotion);
   root.classList.toggle("nfs-neon-off", !settings.neonEffects);
 }
@@ -59,7 +66,13 @@ export function SettingsProvider({ children }: { children: ReactNode }) {
   }, [settings, hydrated]);
 
   const updateSettings = useCallback((patch: Partial<AppSettings>) => {
-    setSettings((prev) => ({ ...prev, ...patch }));
+    setSettings((prev) => {
+      const next = { ...prev, ...patch };
+      if (patch.neonColor !== undefined) {
+        next.neonColor = normalizeHexColor(patch.neonColor);
+      }
+      return next;
+    });
   }, []);
 
   const resetSettings = useCallback(() => {

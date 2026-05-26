@@ -51,7 +51,7 @@ export function SiteFooter() {
         aria-hidden
       />
       <div
-        className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(0,240,255,0.04)_0%,transparent_35%)]"
+        className="pointer-events-none absolute inset-0 bg-[linear-gradient(180deg,rgba(var(--nfs-neon-rgb),0.04)_0%,transparent_35%)]"
         aria-hidden
       />
       <div
@@ -158,7 +158,7 @@ export function SiteFooter() {
             </p>
             <Link
               href="/cars"
-              className="mt-5 inline-flex items-center gap-2 rounded-sm bg-nfs-neon px-5 py-2.5 text-sm font-semibold text-nfs-asphalt transition-all hover:bg-white hover:shadow-[0_0_24px_rgba(0,240,255,0.35)]"
+              className="mt-5 inline-flex items-center gap-2 rounded-sm bg-nfs-neon px-5 py-2.5 text-sm font-semibold text-nfs-asphalt shadow-nfs-glow-lg transition-all hover:bg-white"
             >
               Ver juegos
               <span aria-hidden>→</span>

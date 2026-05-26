@@ -3,6 +3,7 @@ export type SettingsTab = "general" | "pantalla" | "audio" | "privacidad";
 export type AppSettings = {
   language: "es" | "en";
   neonEffects: boolean;
+  neonColor: string;
   backgroundVideo: boolean;
   uiBrightness: number;
   masterVolume: number;
@@ -15,6 +16,7 @@ export type AppSettings = {
 export const DEFAULT_SETTINGS: AppSettings = {
   language: "es",
   neonEffects: true,
+  neonColor: "#00f0ff",
   backgroundVideo: true,
   uiBrightness: 100,
   masterVolume: 75,

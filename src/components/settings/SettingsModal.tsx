@@ -4,6 +4,10 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import { cn } from "@/lib/utils/cn";
 import { useSettings } from "@/context/SettingsContext";
+import {
+  applyNeonColorToDocument,
+  NEON_COLOR_PRESETS,
+} from "@/lib/settings/neon-color";
 import { DEFAULT_SETTINGS, type SettingsTab } from "@/lib/settings/types";
 
 type SettingsModalProps = {
@@ -57,7 +61,7 @@ function Toggle({
         <span
           className={cn(
             "absolute left-0.5 h-5 w-5 rounded-full bg-nfs-chrome shadow transition-all duration-200",
-            "peer-checked:translate-x-5 peer-checked:bg-nfs-neon peer-checked:shadow-[0_0_12px_rgba(0,240,255,0.6)]"
+            "peer-checked:translate-x-5 peer-checked:bg-nfs-neon peer-checked:shadow-nfs-glow-sm"
           )}
           aria-hidden
         />
@@ -98,6 +102,62 @@ function Slider({
         onChange={(e) => onChange(Number(e.target.value))}
         className="nfs-range w-full"
       />
+    </div>
+  );
+}
+
+function NeonColorRow({
+  value,
+  disabled,
+  onChange,
+}: {
+  value: string;
+  disabled?: boolean;
+  onChange: (hex: string) => void;
+}) {
+  return (
+    <div
+      className={cn(
+        "rounded-sm border border-white/5 bg-white/[0.02] px-4 py-3.5",
+        disabled && "pointer-events-none opacity-45"
+      )}
+    >
+      <div className="mb-3">
+        <span className="block text-sm font-medium text-white">Color del neón</span>
+        <span className="mt-1 block text-xs leading-relaxed text-nfs-chrome/80">
+          Afecta títulos, botones, bordes y la animación en todo el sitio.
+        </span>
+      </div>
+      <div className="mb-3 flex flex-wrap gap-2">
+        {NEON_COLOR_PRESETS.map((preset) => (
+          <button
+            key={preset.id}
+            type="button"
+            title={preset.label}
+            aria-label={preset.label}
+            onClick={() => onChange(preset.hex)}
+            className={cn(
+              "h-9 w-9 rounded-sm border-2 transition-transform hover:scale-105",
+              value.toLowerCase() === preset.hex.toLowerCase()
+                ? "border-white ring-2 ring-nfs-neon/50"
+                : "border-white/20"
+            )}
+            style={{ backgroundColor: preset.hex }}
+          />
+        ))}
+      </div>
+      <label className="flex items-center gap-3">
+        <input
+          type="color"
+          value={value}
+          disabled={disabled}
+          onChange={(e) => onChange(e.target.value)}
+          className="h-10 w-14 cursor-pointer rounded border border-white/15 bg-transparent p-0.5"
+        />
+        <span className="font-display text-sm uppercase tracking-wider text-nfs-neon">
+          {value}
+        </span>
+      </label>
     </div>
   );
 }
@@ -160,6 +220,11 @@ function TabPanel({
           description="Animaciones de brillo en títulos y elementos destacados."
           checked={draft.neonEffects}
           onChange={(neonEffects) => onPatch({ neonEffects })}
+        />
+        <NeonColorRow
+          value={draft.neonColor}
+          disabled={!draft.neonEffects}
+          onChange={(neonColor) => onPatch({ neonColor })}
         />
         <Toggle
           label="Reducir movimiento"
@@ -257,6 +322,14 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
 
   useEffect(() => {
     if (!open) return;
+    applyNeonColorToDocument(draft.neonColor);
+    return () => {
+      applyNeonColorToDocument(settings.neonColor);
+    };
+  }, [open, draft.neonColor, settings.neonColor]);
+
+  useEffect(() => {
+    if (!open) return;
     const prevOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
     closeButtonRef.current?.focus();
@@ -306,7 +379,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
         className={cn(
           "relative flex w-full max-w-4xl flex-col overflow-hidden",
           "max-h-[min(90vh,720px)] rounded-sm border border-nfs-neon/30",
-          "bg-[#0a0a0f] shadow-[0_0_0_1px_rgba(0,240,255,0.08),0_24px_80px_rgba(0,0,0,0.85),0_0_60px_rgba(0,240,255,0.12)]",
+          "bg-[#0a0a0f] shadow-nfs-panel",
           "nfs-settings-panel animate-in"
         )}
         onClick={(e) => e.stopPropagation()}
@@ -337,7 +410,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
             type="button"
             onClick={onClose}
             aria-label="Cerrar"
-            className="flex h-9 w-9 items-center justify-center rounded border border-white/20 text-nfs-chrome transition hover:border-nfs-neon/50 hover:text-white hover:shadow-[0_0_16px_rgba(0,240,255,0.2)]"
+            className="flex h-9 w-9 items-center justify-center rounded border border-white/20 text-nfs-chrome transition hover:border-nfs-neon/50 hover:text-white hover:shadow-nfs-glow-md"
           >
             <svg viewBox="0 0 24 24" className="h-5 w-5" fill="none" aria-hidden>
               <path
@@ -363,7 +436,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
                 className={cn(
                   "flex items-center gap-2 whitespace-nowrap rounded-sm px-3 py-2.5 text-left text-sm transition",
                   activeTab === tab.id
-                    ? "bg-nfs-neon/15 text-nfs-neon shadow-[inset_0_0_20px_rgba(0,240,255,0.08)]"
+                    ? "bg-nfs-neon/15 text-nfs-neon shadow-nfs-inset-tab"
                     : "text-nfs-chrome hover:bg-white/5 hover:text-white"
                 )}
               >
@@ -403,7 +476,7 @@ export function SettingsModal({ open, onClose }: SettingsModalProps) {
             <button
               type="button"
               onClick={handleApply}
-              className="rounded-sm bg-nfs-neon px-5 py-2 text-sm font-semibold text-nfs-asphalt shadow-[0_0_24px_rgba(0,240,255,0.25)] transition hover:bg-white hover:shadow-[0_0_32px_rgba(0,240,255,0.4)]"
+              className="rounded-sm bg-nfs-neon px-5 py-2 text-sm font-semibold text-nfs-asphalt shadow-nfs-glow-lg transition hover:bg-white"
             >
               Aplicar
             </button>

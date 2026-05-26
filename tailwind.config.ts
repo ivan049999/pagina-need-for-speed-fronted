@@ -6,7 +6,7 @@ const config: Config = {
     extend: {
       colors: {
         nfs: {
-          neon: "#00f0ff",
+          neon: "rgb(var(--nfs-neon-rgb) / <alpha-value>)",
           asphalt: "#0a0a0f",
           chrome: "#c0c5ce",
           heat: "#ff3d00",

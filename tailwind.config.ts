@@ -13,8 +13,9 @@ const config: Config = {
         },
       },
       fontFamily: {
-        display: ["var(--font-racing)", "system-ui", "sans-serif"],
-        body: ["var(--font-body)", "system-ui", "sans-serif"],
+        sans: ["var(--font-nfs)", "system-ui", "sans-serif"],
+        display: ["var(--font-nfs)", "system-ui", "sans-serif"],
+        body: ["var(--font-nfs)", "system-ui", "sans-serif"],
       },
     },
   },

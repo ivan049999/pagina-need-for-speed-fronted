@@ -4,12 +4,12 @@
 
 @layer base {
   :root {
-    --font-racing: "Orbitron", system-ui, sans-serif;
-    --font-body: "Inter", system-ui, sans-serif;
+    --font-racing: var(--font-nfs), system-ui, sans-serif;
+    --font-body: var(--font-nfs), system-ui, sans-serif;
   }
 
   body {
-    @apply min-h-screen;
+    @apply min-h-screen font-body tracking-wide;
   }
 }
 

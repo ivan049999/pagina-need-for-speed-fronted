@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import { useMemo, useState } from "react";
+import { ALL_COUNTRIES_ES, DEFAULT_COUNTRY_CODE } from "@/lib/countries-es";
 import { cn } from "@/lib/utils/cn";
 import {
   EaAuthCard,
@@ -11,15 +12,6 @@ import {
   eaFieldClass,
   eaLabelClass,
 } from "@/components/auth/ea-auth-ui";
-
-const COUNTRIES = [
-  { value: "ES", label: "España" },
-  { value: "MX", label: "México" },
-  { value: "AR", label: "Argentina" },
-  { value: "CO", label: "Colombia" },
-  { value: "CL", label: "Chile" },
-  { value: "US", label: "Estados Unidos" },
-];
 
 const MONTHS = [
   "Enero",
@@ -37,7 +29,7 @@ const MONTHS = [
 ];
 
 export function EaRegisterForm() {
-  const [country, setCountry] = useState("ES");
+  const [country, setCountry] = useState(DEFAULT_COUNTRY_CODE);
   const [day, setDay] = useState("");
   const [month, setMonth] = useState("");
   const [year, setYear] = useState("");
@@ -82,8 +74,8 @@ export function EaRegisterForm() {
               onChange={(e) => setCountry(e.target.value)}
               className={cn(eaFieldClass, "cursor-pointer")}
             >
-              {COUNTRIES.map((c) => (
-                <option key={c.value} value={c.value} className="bg-[#0f141c]">
+              {ALL_COUNTRIES_ES.map((c) => (
+                <option key={c.value} value={c.value}>
                   {c.label}
                 </option>
               ))}

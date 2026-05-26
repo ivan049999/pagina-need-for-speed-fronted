@@ -82,10 +82,8 @@ export function ProfileAccountDropdown() {
             Iniciar sesión
           </Link>
           <Link
-            href="https://www.ea.com/es-es/register"
+            href="/registro"
             role="menuitem"
-            target="_blank"
-            rel="noopener noreferrer"
             onClick={() => setOpen(false)}
             className="block w-full rounded-sm border border-white py-2.5 text-center text-sm font-medium text-white transition-colors hover:bg-white/5"
           >

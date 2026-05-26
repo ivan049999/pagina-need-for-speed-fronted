@@ -1,8 +1,6 @@
 export type NavLink = { href: string; label: string };
 
 export const NAV_LINKS: NavLink[] = [
-  { href: "/cars", label: "Coches" },
-  { href: "/garage", label: "Garaje" },
-  { href: "/leaderboard", label: "Clasificación" },
+  { href: "/cars", label: "Juegos de Need For Speed" },
   { href: "/news", label: "Noticias" },
 ];

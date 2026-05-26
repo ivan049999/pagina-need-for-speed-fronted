@@ -1,4 +1,8 @@
+"use client";
+
 import Link from "next/link";
+import { useState } from "react";
+import { SettingsModal } from "@/components/settings/SettingsModal";
 
 const iconButtonClass =
   "flex h-7 w-7 items-center justify-center rounded border border-white/70 text-white transition-colors hover:border-white hover:bg-white/10";
@@ -44,26 +48,38 @@ function SettingsIcon() {
 }
 
 export function ElectronicArtsBar() {
+  const [settingsOpen, setSettingsOpen] = useState(false);
+
   return (
-    <div className="border-b border-white/10 bg-[#161616]">
-      <div className="container mx-auto flex h-9 items-center justify-between px-4 md:px-6">
-        <Link
-          href="https://www.ea.com/es"
-          target="_blank"
-          rel="noopener noreferrer"
-          className="text-[13px] font-normal tracking-wide text-white transition-opacity hover:opacity-80"
-        >
-          Electronic Arts
-        </Link>
-        <div className="flex items-center gap-2">
-          <button type="button" aria-label="Cuenta" className={iconButtonClass}>
-            <ProfileIcon />
-          </button>
-          <button type="button" aria-label="Ajustes" className={iconButtonClass}>
-            <SettingsIcon />
-          </button>
+    <>
+      <div className="border-b border-white/10 bg-[#161616]">
+        <div className="container mx-auto flex h-9 items-center justify-between px-4 md:px-6">
+          <Link
+            href="https://www.ea.com/es"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[13px] font-normal tracking-wide text-white transition-opacity hover:opacity-80"
+          >
+            Electronic Arts
+          </Link>
+          <div className="flex items-center gap-2">
+            <button type="button" aria-label="Cuenta" className={iconButtonClass}>
+              <ProfileIcon />
+            </button>
+            <button
+              type="button"
+              aria-label="Ajustes"
+              aria-expanded={settingsOpen}
+              aria-haspopup="dialog"
+              className={iconButtonClass}
+              onClick={() => setSettingsOpen(true)}
+            >
+              <SettingsIcon />
+            </button>
+          </div>
         </div>
       </div>
-    </div>
+      <SettingsModal open={settingsOpen} onClose={() => setSettingsOpen(false)} />
+    </>
   );
 }

@@ -4,6 +4,7 @@ import "@/app/globals.css";
 import { ElectronicArtsBar } from "@/components/layout/ElectronicArtsBar";
 import { SiteHeader } from "@/components/layout/SiteHeader";
 import { SiteFooter } from "@/components/layout/SiteFooter";
+import { Providers } from "@/components/providers/Providers";
 
 const nfsFont = Orbitron({
   subsets: ["latin"],
@@ -28,12 +29,14 @@ export default function RootLayout({
   return (
     <html lang="es" className={nfsFont.variable}>
       <body className="font-body antialiased bg-nfs-asphalt text-white">
-        <div className="sticky top-0 z-50">
-          <ElectronicArtsBar />
-          <SiteHeader />
-        </div>
-        <main>{children}</main>
-        <SiteFooter />
+        <Providers>
+          <div className="sticky top-0 z-50">
+            <ElectronicArtsBar />
+            <SiteHeader />
+          </div>
+          <main>{children}</main>
+          <SiteFooter />
+        </Providers>
       </body>
     </html>
   );

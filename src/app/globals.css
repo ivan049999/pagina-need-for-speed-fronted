@@ -8,9 +8,75 @@
     --font-body: var(--font-nfs), system-ui, sans-serif;
   }
 
+  html {
+    filter: brightness(var(--nfs-ui-brightness, 100%));
+  }
+
   body {
     @apply min-h-screen font-body tracking-wide;
   }
+
+  .nfs-neon-off .text-neon-underground--compact,
+  .nfs-neon-off .text-neon-underground--hero {
+    animation: none !important;
+    color: #00f0ff;
+    filter: brightness(1.05);
+  }
+
+  .nfs-reduced-motion .text-neon-underground--compact,
+  .nfs-reduced-motion .text-neon-underground--hero {
+    animation: none !important;
+  }
+
+  .nfs-range {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 2px;
+    background: linear-gradient(
+      90deg,
+      rgba(0, 240, 255, 0.5) 0%,
+      rgba(255, 255, 255, 0.12) 100%
+    );
+    outline: none;
+  }
+
+  .nfs-range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+    border: 1px solid rgba(0, 240, 255, 0.6);
+    background: #00f0ff;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+    cursor: pointer;
+  }
+
+  .nfs-range::-moz-range-thumb {
+    width: 16px;
+    height: 16px;
+    border-radius: 2px;
+    border: 1px solid rgba(0, 240, 255, 0.6);
+    background: #00f0ff;
+    box-shadow: 0 0 12px rgba(0, 240, 255, 0.5);
+    cursor: pointer;
+  }
+}
+
+@keyframes nfs-settings-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96) translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+.nfs-settings-panel.animate-in {
+  animation: nfs-settings-in 0.22s ease-out;
 }
 
 @layer utilities {

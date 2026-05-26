@@ -1,6 +1,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { NAV_LINKS } from "@/config/navigation";
+import { NavGamesDropdown } from "@/components/layout/NavGamesDropdown";
 
 export function SiteHeader() {
   return (
@@ -17,7 +18,8 @@ export function SiteHeader() {
               priority
             />
           </Link>
-          <nav className="hidden gap-6 md:flex md:gap-8 lg:gap-10">
+          <nav className="hidden items-center gap-6 md:flex md:gap-8 lg:gap-10">
+            <NavGamesDropdown />
             {NAV_LINKS.map((link) => (
               <Link
                 key={link.href}

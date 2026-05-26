@@ -7,7 +7,7 @@ export function HeroSection() {
     <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
       <HeroVideoBackground />
       <div className="relative z-10 text-center px-4">
-        <h1 className="font-display text-5xl md:text-7xl text-glow-neon text-nfs-neon mb-4">
+        <h1 className="font-display text-6xl sm:text-7xl md:text-8xl lg:text-9xl leading-[0.95] tracking-tight text-glow-neon text-nfs-neon mb-6">
           Need for Speed
         </h1>
         <p className="text-nfs-chrome max-w-xl mx-auto mb-8">

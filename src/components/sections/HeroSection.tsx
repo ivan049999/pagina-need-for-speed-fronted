@@ -1,10 +1,11 @@
 import Link from "next/link";
 import { Button } from "@/components/ui/Button";
+import { HeroVideoBackground } from "@/components/sections/HeroVideoBackground";
 
 export function HeroSection() {
   return (
     <section className="relative flex min-h-[80vh] items-center justify-center overflow-hidden">
-      <div className="absolute inset-0 bg-gradient-to-b from-nfs-neon/10 to-transparent" />
+      <HeroVideoBackground />
       <div className="relative z-10 text-center px-4">
         <h1 className="font-display text-5xl md:text-7xl text-glow-neon text-nfs-neon mb-4">
           Need for Speed

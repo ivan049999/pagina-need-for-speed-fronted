@@ -31,7 +31,12 @@ import {
   parseBirthDateIso,
 } from "@/lib/auth/birth-date";
 import { maskEmail } from "@/lib/auth/mask-email";
-import { ALL_COUNTRIES_ES } from "@/lib/countries-es";
+import { ALL_COUNTRIES_ES, DEFAULT_COUNTRY_CODE } from "@/lib/countries-es";
+import {
+  DEFAULT_LANGUAGE_CODE,
+  getLanguageLabel,
+  LANGUAGE_OPTIONS,
+} from "@/lib/locales/language-options";
 import {
   DEFAULT_PHONE_DIAL_CODE,
   PHONE_COUNTRY_OPTIONS,
@@ -52,6 +57,7 @@ type AccountData = {
   lastName: string | null;
   birthDate: string | null;
   countryCode: string | null;
+  languageCode: string;
   phoneMasked: string | null;
   phoneVerified: boolean;
 };
@@ -167,6 +173,11 @@ export function EaAccountPage() {
   const [verifyingPhoneCode, setVerifyingPhoneCode] = useState(false);
   const [phoneError, setPhoneError] = useState<string | null>(null);
   const [phoneDevHint, setPhoneDevHint] = useState<string | null>(null);
+  const [editingRegional, setEditingRegional] = useState(false);
+  const [draftCountry, setDraftCountry] = useState(DEFAULT_COUNTRY_CODE);
+  const [draftLanguage, setDraftLanguage] = useState(DEFAULT_LANGUAGE_CODE);
+  const [savingRegional, setSavingRegional] = useState(false);
+  const [regionalError, setRegionalError] = useState<string | null>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -195,6 +206,7 @@ export function EaAccountPage() {
         lastName?: string | null;
         birthDate?: string | null;
         countryCode?: string | null;
+        languageCode?: string;
         phoneMasked?: string | null;
         phoneVerified?: boolean;
       };
@@ -216,6 +228,7 @@ export function EaAccountPage() {
         lastName: data.lastName ?? null,
         birthDate: data.birthDate ?? null,
         countryCode: data.countryCode ?? null,
+        languageCode: data.languageCode ?? DEFAULT_LANGUAGE_CODE,
         phoneMasked: data.phoneMasked ?? null,
         phoneVerified: data.phoneVerified ?? false,
       });
@@ -231,6 +244,7 @@ export function EaAccountPage() {
         lastName: null,
         birthDate: null,
         countryCode: null,
+        languageCode: DEFAULT_LANGUAGE_CODE,
         phoneMasked: null,
         phoneVerified: false,
       });
@@ -267,6 +281,7 @@ export function EaAccountPage() {
   }, [router]);
 
   function handleStartAddPhone() {
+    setEditingRegional(false);
     setEditingName(false);
     setEditingBirthDate(false);
     setDraftDialCode(DEFAULT_PHONE_DIAL_CODE);
@@ -395,8 +410,76 @@ export function EaAccountPage() {
     }
   }
 
+  function handleStartEditRegional() {
+    if (!account) return;
+    setEditingName(false);
+    setEditingBirthDate(false);
+    setPhoneStep("idle");
+    setDraftCountry(account.countryCode ?? DEFAULT_COUNTRY_CODE);
+    setDraftLanguage(account.languageCode ?? DEFAULT_LANGUAGE_CODE);
+    setRegionalError(null);
+    setEditingRegional(true);
+  }
+
+  function handleCancelEditRegional() {
+    setEditingRegional(false);
+    setRegionalError(null);
+  }
+
+  async function handleSaveRegional() {
+    const session = getAuthSession();
+    if (!session || !account) return;
+
+    setSavingRegional(true);
+    setRegionalError(null);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/profile/region`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify({
+          countryCode: draftCountry,
+          languageCode: draftLanguage,
+        }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        countryCode?: string;
+        languageCode?: string;
+        error?: string;
+      };
+
+      if (!res.ok) {
+        setRegionalError(
+          typeof data.error === "string"
+            ? data.error
+            : "No se pudieron guardar los ajustes regionales."
+        );
+        return;
+      }
+
+      setAccount((prev) =>
+        prev
+          ? {
+              ...prev,
+              countryCode: data.countryCode ?? draftCountry,
+              languageCode: data.languageCode ?? draftLanguage,
+            }
+          : prev
+      );
+      setEditingRegional(false);
+    } catch {
+      setRegionalError("No se pudieron guardar los ajustes. Inténtalo de nuevo.");
+    } finally {
+      setSavingRegional(false);
+    }
+  }
+
   function handleStartEditName() {
     if (!account) return;
+    setEditingRegional(false);
     setPhoneStep("idle");
     setEditingBirthDate(false);
     setDraftFirstName(account.firstName ?? "");
@@ -465,6 +548,7 @@ export function EaAccountPage() {
 
   function handleStartEditBirthDate() {
     if (!account) return;
+    setEditingRegional(false);
     setPhoneStep("idle");
     setEditingName(false);
     const parsed = parseBirthDateIso(account.birthDate);
@@ -1074,15 +1158,84 @@ export function EaAccountPage() {
                 )}
               </div>
 
-              <AccountFieldRow label="Ajustes regionales">
-                <div className="flex flex-wrap items-start justify-between gap-2">
+              <div className="border-b border-[#e5e7eb] py-5">
+                {editingRegional ? (
                   <div>
-                    <p>País/región: {getCountryLabel(account.countryCode)}</p>
-                    <p className="mt-0.5">Idioma: Español</p>
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <div>
+                        <label htmlFor="ea-region-country" className="text-sm font-semibold text-[#1d2033]">
+                          País
+                        </label>
+                        <select
+                          id="ea-region-country"
+                          value={draftCountry}
+                          onChange={(event) => setDraftCountry(event.target.value)}
+                          className={cn(eaBirthSelectClass, "mt-1.5")}
+                        >
+                          {ALL_COUNTRIES_ES.map((country) => (
+                            <option key={country.value} value={country.value}>
+                              {country.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label htmlFor="ea-region-language" className="text-sm font-semibold text-[#1d2033]">
+                          Idioma
+                        </label>
+                        <select
+                          id="ea-region-language"
+                          value={draftLanguage}
+                          onChange={(event) => setDraftLanguage(event.target.value)}
+                          className={cn(eaBirthSelectClass, "mt-1.5")}
+                        >
+                          {LANGUAGE_OPTIONS.map((lang) => (
+                            <option key={lang.value} value={lang.value}>
+                              {lang.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    {regionalError ? (
+                      <p className="mt-3 text-sm text-[#dc2626]" role="alert">
+                        {regionalError}
+                      </p>
+                    ) : null}
+                    <div className="mt-6 flex justify-end gap-3">
+                      <button
+                        type="button"
+                        onClick={handleCancelEditRegional}
+                        disabled={savingRegional}
+                        className="rounded-full border border-[#c5c9d0] bg-white px-6 py-2 text-sm font-medium text-[#1d2033] transition hover:bg-[#f9fafb] disabled:opacity-50"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void handleSaveRegional()}
+                        disabled={savingRegional}
+                        className="rounded-full bg-[#1d2033] px-6 py-2 text-sm font-medium text-white transition hover:bg-[#2d3148] disabled:opacity-50"
+                      >
+                        {savingRegional ? "Guardando…" : "Guardar"}
+                      </button>
+                    </div>
                   </div>
-                  <EaActionLink>Editar</EaActionLink>
-                </div>
-              </AccountFieldRow>
+                ) : (
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-[#1d2033]">Ajustes regionales</p>
+                      <p className="mt-1 text-sm text-[#4b5563]">
+                        País/región: {getCountryLabel(account.countryCode)}
+                      </p>
+                      <p className="mt-0.5 text-sm text-[#4b5563]">
+                        Idioma: {getLanguageLabel(account.languageCode)}
+                      </p>
+                    </div>
+                    <EaActionLink onClick={handleStartEditRegional}>Editar</EaActionLink>
+                  </div>
+                )}
+              </div>
 
               <div className="border-b border-[#e5e7eb] py-5">
                 <p className="text-sm font-semibold text-[#1d2033]">Identidades de juego</p>

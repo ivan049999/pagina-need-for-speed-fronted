@@ -3,7 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import {
   EaAccountAvatar,
   EaCircleLogo,
@@ -25,7 +25,11 @@ import {
   clearAuthSession,
   getAuthSession,
 } from "@/lib/auth-session";
-import { formatBirthDateDisplay } from "@/lib/auth/birth-date";
+import {
+  buildBirthDateIso,
+  formatBirthDateDisplay,
+  parseBirthDateIso,
+} from "@/lib/auth/birth-date";
 import { maskEmail } from "@/lib/auth/mask-email";
 import { ALL_COUNTRIES_ES } from "@/lib/countries-es";
 import { cn } from "@/lib/utils/cn";
@@ -51,6 +55,9 @@ function getCountryLabel(countryCode: string | null) {
 
 const eaNameInputClass =
   "mt-1.5 w-full rounded-md border border-[#c5c9d0] bg-white px-3 py-2.5 text-sm text-[#1d2033] outline-none transition placeholder:text-[#9ca3af] focus:border-[#1d2033] focus:ring-1 focus:ring-[#1d2033]/20";
+
+const eaBirthSelectClass =
+  "w-full rounded-md border border-[#c5c9d0] bg-white px-3 py-2.5 text-sm text-[#1d2033] outline-none transition focus:border-[#1d2033] focus:ring-1 focus:ring-[#1d2033]/20";
 
 function formatDisplayName(firstName: string | null, lastName: string | null) {
   const parts = [firstName, lastName].filter(Boolean);
@@ -138,8 +145,19 @@ export function EaAccountPage() {
   const [draftLastName, setDraftLastName] = useState("");
   const [savingName, setSavingName] = useState(false);
   const [nameError, setNameError] = useState<string | null>(null);
+  const [editingBirthDate, setEditingBirthDate] = useState(false);
+  const [draftBirthYear, setDraftBirthYear] = useState("");
+  const [draftBirthMonth, setDraftBirthMonth] = useState("");
+  const [draftBirthDay, setDraftBirthDay] = useState("");
+  const [savingBirthDate, setSavingBirthDate] = useState(false);
+  const [birthDateError, setBirthDateError] = useState<string | null>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
+
+  const birthYears = useMemo(() => {
+    const current = new Date().getFullYear();
+    return Array.from({ length: 100 }, (_, index) => current - index);
+  }, []);
 
   const loadAccount = useCallback(async () => {
     const session = getAuthSession();
@@ -228,6 +246,7 @@ export function EaAccountPage() {
 
   function handleStartEditName() {
     if (!account) return;
+    setEditingBirthDate(false);
     setDraftFirstName(account.firstName ?? "");
     setDraftLastName(account.lastName ?? "");
     setNameError(null);
@@ -289,6 +308,72 @@ export function EaAccountPage() {
       setNameError("No se pudo guardar el nombre. Inténtalo de nuevo.");
     } finally {
       setSavingName(false);
+    }
+  }
+
+  function handleStartEditBirthDate() {
+    if (!account) return;
+    setEditingName(false);
+    const parsed = parseBirthDateIso(account.birthDate);
+    setDraftBirthYear(parsed.year);
+    setDraftBirthMonth(parsed.month);
+    setDraftBirthDay(parsed.day);
+    setBirthDateError(null);
+    setEditingBirthDate(true);
+  }
+
+  function handleCancelEditBirthDate() {
+    setEditingBirthDate(false);
+    setBirthDateError(null);
+  }
+
+  async function handleSaveBirthDate() {
+    const session = getAuthSession();
+    if (!session || !account) return;
+
+    if (!draftBirthYear || !draftBirthMonth || !draftBirthDay) {
+      setBirthDateError("Selecciona año, mes y día.");
+      return;
+    }
+
+    const birthDate = buildBirthDateIso(draftBirthDay, draftBirthMonth, draftBirthYear);
+    setSavingBirthDate(true);
+    setBirthDateError(null);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/profile/birth-date`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify({ birthDate }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        birthDate?: string;
+        error?: string;
+      };
+
+      if (!res.ok) {
+        setBirthDateError(
+          typeof data.error === "string"
+            ? data.error
+            : "No se pudo guardar la fecha de nacimiento."
+        );
+        return;
+      }
+
+      setAccount((prev) =>
+        prev
+          ? { ...prev, birthDate: data.birthDate ?? birthDate }
+          : prev
+      );
+      setEditingBirthDate(false);
+      setShowDob(true);
+    } catch {
+      setBirthDateError("No se pudo guardar la fecha de nacimiento. Inténtalo de nuevo.");
+    } finally {
+      setSavingBirthDate(false);
     }
   }
 
@@ -540,29 +625,119 @@ export function EaAccountPage() {
                 )}
               </div>
 
-              <AccountFieldRow label="Fecha de nacimiento">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span>
-                    {showDob ? (
-                      account.birthDate ? (
-                        formatBirthDateDisplay(account.birthDate)
-                      ) : (
-                        <span className="text-[#9ca3af]">—</span>
-                      )
-                    ) : (
-                      "••/••/••••"
-                    )}
-                  </span>
-                  <div className="flex items-center gap-4">
-                    {account.birthDate ? (
-                      <EaActionLink onClick={() => setShowDob((value) => !value)}>
-                        {showDob ? "Ocultar" : "Mostrar"}
-                      </EaActionLink>
+              <div className="border-b border-[#e5e7eb] py-5">
+                {editingBirthDate ? (
+                  <div>
+                    <p className="text-sm font-semibold text-[#1d2033]">
+                      Fecha de nacimiento (AAAA-MM-DD)
+                    </p>
+                    <div className="mt-3 grid grid-cols-3 gap-3">
+                      <div>
+                        <label htmlFor="ea-birth-year" className="sr-only">
+                          Año
+                        </label>
+                        <select
+                          id="ea-birth-year"
+                          value={draftBirthYear}
+                          onChange={(event) => setDraftBirthYear(event.target.value)}
+                          className={eaBirthSelectClass}
+                        >
+                          <option value="">Año</option>
+                          {birthYears.map((y) => (
+                            <option key={y} value={String(y)}>
+                              {y}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label htmlFor="ea-birth-month" className="sr-only">
+                          Mes
+                        </label>
+                        <select
+                          id="ea-birth-month"
+                          value={draftBirthMonth}
+                          onChange={(event) => setDraftBirthMonth(event.target.value)}
+                          className={eaBirthSelectClass}
+                        >
+                          <option value="">Mes</option>
+                          {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                            <option key={m} value={String(m)}>
+                              {m}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div>
+                        <label htmlFor="ea-birth-day" className="sr-only">
+                          Día
+                        </label>
+                        <select
+                          id="ea-birth-day"
+                          value={draftBirthDay}
+                          onChange={(event) => setDraftBirthDay(event.target.value)}
+                          className={eaBirthSelectClass}
+                        >
+                          <option value="">Día</option>
+                          {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
+                            <option key={d} value={String(d)}>
+                              {d}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                    </div>
+                    {birthDateError ? (
+                      <p className="mt-3 text-sm text-[#dc2626]" role="alert">
+                        {birthDateError}
+                      </p>
                     ) : null}
-                    <EaActionLink>Editar</EaActionLink>
+                    <div className="mt-6 flex justify-end gap-3">
+                      <button
+                        type="button"
+                        onClick={handleCancelEditBirthDate}
+                        disabled={savingBirthDate}
+                        className="rounded-full border border-[#c5c9d0] bg-white px-6 py-2 text-sm font-medium text-[#1d2033] transition hover:bg-[#f9fafb] disabled:opacity-50"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void handleSaveBirthDate()}
+                        disabled={savingBirthDate}
+                        className="rounded-full bg-[#1d2033] px-6 py-2 text-sm font-medium text-white transition hover:bg-[#2d3148] disabled:opacity-50"
+                      >
+                        {savingBirthDate ? "Guardando…" : "Guardar"}
+                      </button>
+                    </div>
                   </div>
-                </div>
-              </AccountFieldRow>
+                ) : (
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-[#1d2033]">Fecha de nacimiento</p>
+                      <p className="mt-1 text-sm text-[#4b5563]">
+                        {showDob ? (
+                          account.birthDate ? (
+                            formatBirthDateDisplay(account.birthDate)
+                          ) : (
+                            <span className="text-[#9ca3af]">—</span>
+                          )
+                        ) : (
+                          "••/••/••••"
+                        )}
+                      </p>
+                    </div>
+                    <div className="flex items-center gap-4">
+                      {account.birthDate ? (
+                        <EaActionLink onClick={() => setShowDob((value) => !value)}>
+                          {showDob ? "Ocultar" : "Mostrar"}
+                        </EaActionLink>
+                      ) : null}
+                      <EaActionLink onClick={handleStartEditBirthDate}>Editar</EaActionLink>
+                    </div>
+                  </div>
+                )}
+              </div>
 
               <AccountFieldRow
                 label="Dirección de correo electrónico"

@@ -34,6 +34,9 @@ export type AccountData = {
   languageCode: string;
   phoneMasked: string | null;
   phoneVerified: boolean;
+  twoFactorEnabled: boolean;
+  secondaryEmailMasked: string | null;
+  secondaryEmailVerified: boolean;
 };
 
 export function useEaAccountSession() {
@@ -67,6 +70,9 @@ export function useEaAccountSession() {
         languageCode?: string;
         phoneMasked?: string | null;
         phoneVerified?: boolean;
+        twoFactorEnabled?: boolean;
+        secondaryEmailMasked?: string | null;
+        secondaryEmailVerified?: boolean;
       };
 
       if (!res.ok) {
@@ -89,6 +95,9 @@ export function useEaAccountSession() {
         languageCode: data.languageCode ?? DEFAULT_LANGUAGE_CODE,
         phoneMasked: data.phoneMasked ?? null,
         phoneVerified: data.phoneVerified ?? false,
+        twoFactorEnabled: data.twoFactorEnabled ?? false,
+        secondaryEmailMasked: data.secondaryEmailMasked ?? null,
+        secondaryEmailVerified: data.secondaryEmailVerified ?? false,
       });
     } catch {
       setAccount({
@@ -104,6 +113,9 @@ export function useEaAccountSession() {
         languageCode: DEFAULT_LANGUAGE_CODE,
         phoneMasked: null,
         phoneVerified: false,
+        twoFactorEnabled: false,
+        secondaryEmailMasked: null,
+        secondaryEmailVerified: false,
       });
     } finally {
       setLoading(false);

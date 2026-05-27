@@ -26,6 +26,10 @@ CREATE TABLE public.profiles (
   phone_dial_code TEXT,
   phone_number    TEXT,
   phone_verified  BOOLEAN NOT NULL DEFAULT false,
+  two_factor_enabled BOOLEAN NOT NULL DEFAULT false,
+  two_factor_method  TEXT,
+  secondary_email TEXT,
+  secondary_email_verified BOOLEAN NOT NULL DEFAULT false,
   avatar_url    TEXT,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()

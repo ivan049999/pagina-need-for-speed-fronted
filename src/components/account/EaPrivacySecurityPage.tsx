@@ -5,6 +5,7 @@ import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
 import { EaAccountShell } from "@/components/account/EaAccountShell";
 import { IconChevronRight, IconInfo } from "@/components/account/ea-account-icons";
 import { getAuthSession } from "@/lib/auth-session";
+import { maskEmail } from "@/lib/auth/mask-email";
 import { useEaAccountContext } from "@/lib/account/useEaAccountSession";
 import { cn } from "@/lib/utils/cn";
 
@@ -14,6 +15,12 @@ const eaInputClass =
   "mt-1.5 w-full rounded-md border border-[#c5c9d0] bg-white px-3 py-2.5 text-sm text-[#1d2033] outline-none transition placeholder:text-[#9ca3af] focus:border-[#1d2033] focus:ring-1 focus:ring-[#1d2033]/20";
 
 type PasswordFlowStep = "overview" | "verify" | "code" | "form";
+type PanelView = "privacy" | "password" | "twoFactor" | "twoFactorSetup";
+type TwoFactorSetupStep = "method" | "code";
+type SecondaryEmailStep = "idle" | "form" | "code";
+
+const panelCardClass =
+  "rounded-sm bg-white px-6 py-6 text-[#1d2033] shadow-[0_4px_24px_rgba(0,0,0,0.25)] md:px-8 md:py-8";
 
 function isValidEaPassword(value: string) {
   return (
@@ -276,7 +283,7 @@ function ChangePasswordFlow({
 
   if (step === "verify") {
     return (
-      <div className="rounded-sm bg-white px-6 py-6 text-[#1d2033] shadow-[0_4px_24px_rgba(0,0,0,0.25)] md:px-8 md:py-8">
+      <div className={panelCardClass}>
         <h2 className="text-xl font-semibold">Seguridad</h2>
         <p className="mt-6 text-sm font-semibold">Cambiar contraseña</p>
         <p className="mt-3 text-sm leading-relaxed text-[#4b5563]">
@@ -313,7 +320,7 @@ function ChangePasswordFlow({
 
   if (step === "code") {
     return (
-      <div className="rounded-sm bg-white px-6 py-6 text-[#1d2033] shadow-[0_4px_24px_rgba(0,0,0,0.25)] md:px-8 md:py-8">
+      <div className={panelCardClass}>
         <h2 className="text-xl font-semibold">Seguridad</h2>
         <p className="mt-6 text-sm font-semibold">Cambiar contraseña</p>
         {devHint ? (
@@ -370,7 +377,7 @@ function ChangePasswordFlow({
   }
 
   return (
-    <div className="rounded-sm bg-white px-6 py-6 text-[#1d2033] shadow-[0_4px_24px_rgba(0,0,0,0.25)] md:px-8 md:py-8">
+    <div className={panelCardClass}>
       <h2 className="text-xl font-semibold">Seguridad</h2>
       <div className="mt-6 border-b border-[#e5e7eb] pb-6">
         <p className="text-sm font-semibold">Contraseña</p>
@@ -463,17 +470,559 @@ function ChangePasswordFlow({
   );
 }
 
-function EaPrivacySecurityPanel() {
-  const [passwordStep, setPasswordStep] = useState<PasswordFlowStep>("overview");
-  const [gameAdsActive, setGameAdsActive] = useState(false);
-  const [thirdPartyAdsActive, setThirdPartyAdsActive] = useState(false);
+const TWO_FACTOR_INTRO =
+  "La Autenticación en dos pasos (anteriormente Verificación de inicio de sesión) añade una capa adicional de seguridad a tu Cuenta EA. Te enviaremos un código de verificación cuando inicies sesión desde un dispositivo no reconocido.";
 
-  if (passwordStep !== "overview") {
-    return <ChangePasswordFlow onCancel={() => setPasswordStep("overview")} />;
+function TwoFactorBackLink({ onClick }: { onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className="text-sm text-[#2766ec] hover:underline focus:outline-none focus-visible:ring-2 focus-visible:ring-[#2766ec]/40"
+    >
+      &lt; Atrás
+    </button>
+  );
+}
+
+function TwoFactorDetailView({
+  onBack,
+  onActivate,
+}: {
+  onBack: () => void;
+  onActivate: () => void;
+}) {
+  return (
+    <div className={panelCardClass}>
+      <TwoFactorBackLink onClick={onBack} />
+      <h2 className="mt-4 text-xl font-semibold">Autenticación en dos pasos</h2>
+      <p className="mt-4 max-w-2xl text-sm leading-relaxed text-[#4b5563]">{TWO_FACTOR_INTRO}</p>
+      <button
+        type="button"
+        onClick={onActivate}
+        className="mt-8 rounded-full bg-[#1d2033] px-8 py-2.5 text-sm font-medium text-white transition hover:bg-[#2d3148]"
+      >
+        Activar
+      </button>
+    </div>
+  );
+}
+
+function TwoFactorSetupView({
+  onBack,
+  onComplete,
+}: {
+  onBack: () => void;
+  onComplete: () => void;
+}) {
+  const { account, setAccount } = useEaAccountContext();
+  const [setupStep, setSetupStep] = useState<TwoFactorSetupStep>("method");
+  const [sendingCode, setSendingCode] = useState(false);
+  const [verifyingCode, setVerifyingCode] = useState(false);
+  const [draftCode, setDraftCode] = useState("");
+  const [error, setError] = useState<string | null>(null);
+  const [devHint, setDevHint] = useState<string | null>(null);
+
+  const userEmail = account?.email ?? "";
+
+  async function handleSendCode() {
+    const session = getAuthSession();
+    if (!session) return;
+
+    setSendingCode(true);
+    setError(null);
+    setDevHint(null);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/profile/two-factor/send-code`, {
+        method: "POST",
+        headers: { Authorization: `Bearer ${session.accessToken}` },
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        delivery?: string;
+        message?: string;
+      };
+
+      if (!res.ok) {
+        setError(typeof data.error === "string" ? data.error : "No se pudo enviar el código.");
+        return;
+      }
+
+      if (data.delivery === "dev-console") {
+        setDevHint(
+          data.message ??
+            "Revisa la consola del backend: ahí verás el código de 6 dígitos."
+        );
+      }
+
+      setSetupStep("code");
+      setDraftCode("");
+    } catch {
+      setError("No se pudo enviar el código. Inténtalo de nuevo.");
+    } finally {
+      setSendingCode(false);
+    }
+  }
+
+  async function handleVerifyCode() {
+    const session = getAuthSession();
+    if (!session) return;
+
+    if (!/^\d{6}$/.test(draftCode)) {
+      setError("Introduce el código de 6 dígitos.");
+      return;
+    }
+
+    setVerifyingCode(true);
+    setError(null);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/profile/two-factor/verify`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify({ code: draftCode }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        code?: string;
+        twoFactorEnabled?: boolean;
+      };
+
+      if (!res.ok) {
+        const reason = data.code ?? data.error;
+        if (reason === "CODE_INVALID") {
+          setError("Código incorrecto. Compruébalo e inténtalo de nuevo.");
+        } else if (reason === "TOO_MANY_ATTEMPTS") {
+          setError("Demasiados intentos. Solicita un código nuevo.");
+        } else {
+          setError(
+            typeof data.error === "string"
+              ? data.error
+              : "Código no válido o caducado. Solicita uno nuevo."
+          );
+        }
+        return;
+      }
+
+      setAccount((prev) => (prev ? { ...prev, twoFactorEnabled: true } : prev));
+      onComplete();
+    } catch {
+      setError("No se pudo verificar el código. Inténtalo de nuevo.");
+    } finally {
+      setVerifyingCode(false);
+    }
   }
 
   return (
-    <div className="rounded-sm bg-white px-6 py-6 text-[#1d2033] shadow-[0_4px_24px_rgba(0,0,0,0.25)] md:px-8 md:py-8">
+    <div className={panelCardClass}>
+      <TwoFactorBackLink onClick={onBack} />
+      <h2 className="mt-4 text-xl font-semibold">Autenticación en dos pasos</h2>
+      <p className="mt-4 max-w-2xl text-sm leading-relaxed text-[#4b5563]">{TWO_FACTOR_INTRO}</p>
+
+      <div className="mt-6">
+          {setupStep === "method" ? (
+            <>
+              <p className="text-sm leading-relaxed text-[#1d2033]">
+                Enviaremos un código de verificación a{" "}
+                <span className="font-semibold">{userEmail}</span> cuando inicies sesión desde un
+                dispositivo no reconocido.
+              </p>
+              <div className="mt-4 flex items-start gap-2 rounded-md bg-[#f3f4f6] px-4 py-3 text-xs leading-relaxed text-[#4b5563]">
+                <IconInfo />
+                <span>
+                  Si juegas a FIFA 15 o FIFA 16 en consolas de la generación anterior, es posible
+                  que no puedas usar la autenticación en dos pasos.
+                </span>
+              </div>
+              {error ? (
+                <p className="mt-4 text-sm text-[#dc2626]" role="alert">
+                  {error}
+                </p>
+              ) : null}
+              <div className="mt-8 flex justify-end">
+                <button
+                  type="button"
+                  onClick={() => void handleSendCode()}
+                  disabled={sendingCode}
+                  className="rounded-full bg-[#1d2033] px-6 py-2 text-sm font-medium text-white transition hover:bg-[#2d3148] disabled:opacity-50"
+                >
+                  {sendingCode ? "Enviando…" : "Enviar código"}
+                </button>
+              </div>
+            </>
+          ) : (
+            <>
+              {devHint ? (
+                <p
+                  className="rounded-md border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-900"
+                  role="status"
+                >
+                  {devHint}
+                </p>
+              ) : (
+                <p className="text-sm leading-relaxed text-[#4b5563]">
+                  Introduce el código de 6 dígitos enviado a{" "}
+                  <span className="font-semibold text-[#1d2033]">{userEmail}</span>.
+                </p>
+              )}
+              <input
+                id="ea-two-factor-code"
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                value={draftCode}
+                onChange={(event) =>
+                  setDraftCode(event.target.value.replace(/\D/g, "").slice(0, 6))
+                }
+                placeholder="000000"
+                className={cn(eaInputClass, "mt-4 max-w-xs tracking-[0.3em]")}
+                autoFocus
+              />
+              {error ? (
+                <p className="mt-3 text-sm text-[#dc2626]" role="alert">
+                  {error}
+                </p>
+              ) : null}
+              <div className="mt-8 flex justify-end gap-3">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setSetupStep("method");
+                    setDraftCode("");
+                    setError(null);
+                  }}
+                  disabled={verifyingCode}
+                  className="rounded-full border border-[#c5c9d0] bg-white px-6 py-2 text-sm font-medium text-[#1d2033] transition hover:bg-[#f9fafb] disabled:opacity-50"
+                >
+                  Cancelar
+                </button>
+                <button
+                  type="button"
+                  onClick={() => void handleVerifyCode()}
+                  disabled={verifyingCode || draftCode.length !== 6}
+                  className="rounded-full bg-[#1d2033] px-6 py-2 text-sm font-medium text-white transition hover:bg-[#2d3148] disabled:opacity-50"
+                >
+                  {verifyingCode ? "Verificando…" : "Activar"}
+                </button>
+              </div>
+            </>
+          )}
+      </div>
+    </div>
+  );
+}
+
+function SecondaryEmailSection() {
+  const { account, setAccount } = useEaAccountContext();
+  const [step, setStep] = useState<SecondaryEmailStep>("idle");
+  const [draftEmail, setDraftEmail] = useState("");
+  const [draftCode, setDraftCode] = useState("");
+  const [sendingCode, setSendingCode] = useState(false);
+  const [verifyingCode, setVerifyingCode] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const [devHint, setDevHint] = useState<string | null>(null);
+
+  const hasVerified = account?.secondaryEmailVerified ?? false;
+  const masked = account?.secondaryEmailMasked;
+
+  function handleCancel() {
+    setStep("idle");
+    setDraftEmail("");
+    setDraftCode("");
+    setError(null);
+    setDevHint(null);
+  }
+
+  async function handleSendCode() {
+    const session = getAuthSession();
+    if (!session) return;
+
+    const email = draftEmail.trim();
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+      setError("Introduce un correo electrónico válido.");
+      return;
+    }
+
+    if (account?.email && email.toLowerCase() === account.email.toLowerCase()) {
+      setError("El correo secundario debe ser distinto del correo principal.");
+      return;
+    }
+
+    setSendingCode(true);
+    setError(null);
+    setDevHint(null);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/profile/secondary-email/send-code`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify({ email }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        delivery?: string;
+        message?: string;
+      };
+
+      if (!res.ok) {
+        setError(typeof data.error === "string" ? data.error : "No se pudo enviar el código.");
+        return;
+      }
+
+      if (data.delivery === "dev-console") {
+        setDevHint(
+          data.message ??
+            "Revisa la consola del backend: ahí verás el código de 6 dígitos."
+        );
+      }
+
+      setStep("code");
+      setDraftCode("");
+    } catch {
+      setError("No se pudo enviar el código. Inténtalo de nuevo.");
+    } finally {
+      setSendingCode(false);
+    }
+  }
+
+  async function handleVerifyCode() {
+    const session = getAuthSession();
+    if (!session) return;
+
+    if (!/^\d{6}$/.test(draftCode)) {
+      setError("Introduce el código de 6 dígitos.");
+      return;
+    }
+
+    setVerifyingCode(true);
+    setError(null);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/profile/secondary-email/verify`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify({ code: draftCode }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        code?: string;
+        secondaryEmailMasked?: string;
+        secondaryEmailVerified?: boolean;
+      };
+
+      if (!res.ok) {
+        const reason = data.code ?? data.error;
+        if (reason === "CODE_INVALID") {
+          setError("Código incorrecto. Compruébalo e inténtalo de nuevo.");
+        } else if (reason === "TOO_MANY_ATTEMPTS") {
+          setError("Demasiados intentos. Solicita un código nuevo.");
+        } else {
+          setError(
+            typeof data.error === "string"
+              ? data.error
+              : "Código no válido o caducado. Solicita uno nuevo."
+          );
+        }
+        return;
+      }
+
+      setAccount((prev) =>
+        prev
+          ? {
+              ...prev,
+              secondaryEmailVerified: true,
+              secondaryEmailMasked:
+                data.secondaryEmailMasked ?? maskEmail(draftEmail.trim()),
+            }
+          : prev
+      );
+      handleCancel();
+    } catch {
+      setError("No se pudo verificar el código. Inténtalo de nuevo.");
+    } finally {
+      setVerifyingCode(false);
+    }
+  }
+
+  if (step === "form" || step === "code") {
+    return (
+      <div className="border-b border-[#e5e7eb] py-5 last:border-b-0">
+        <p className="text-sm font-semibold text-[#1d2033]">Correo electrónico secundario</p>
+        {step === "form" ? (
+          <>
+            <label htmlFor="ea-secondary-email" className="sr-only">
+              Correo electrónico secundario
+            </label>
+            <input
+              id="ea-secondary-email"
+              type="email"
+              autoComplete="email"
+              value={draftEmail}
+              onChange={(event) => setDraftEmail(event.target.value)}
+              placeholder="Introduce tu correo electrónico"
+              className={eaInputClass}
+              autoFocus
+            />
+            <p className="mt-3 flex items-start gap-2 text-xs leading-relaxed text-[#6b7280]">
+              <IconInfo />
+              <span>
+                Enviaremos un correo electrónico de verificación a la dirección de correo
+                electrónico proporcionada.
+              </span>
+            </p>
+            {error ? (
+              <p className="mt-3 text-sm text-[#dc2626]" role="alert">
+                {error}
+              </p>
+            ) : null}
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={handleCancel}
+                disabled={sendingCode}
+                className="rounded-full border border-[#c5c9d0] bg-white px-6 py-2 text-sm font-medium text-[#1d2033] transition hover:bg-[#f9fafb] disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleSendCode()}
+                disabled={sendingCode}
+                className="rounded-full bg-[#1d2033] px-6 py-2 text-sm font-medium text-white transition hover:bg-[#2d3148] disabled:opacity-50"
+              >
+                {sendingCode ? "Enviando…" : "Enviar código"}
+              </button>
+            </div>
+          </>
+        ) : (
+          <>
+            {devHint ? (
+              <p
+                className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-900"
+                role="status"
+              >
+                {devHint}
+              </p>
+            ) : (
+              <p className="mt-3 text-sm text-[#4b5563]">
+                Introduce el código de 6 dígitos enviado a{" "}
+                <span className="font-semibold text-[#1d2033]">{draftEmail}</span>.
+              </p>
+            )}
+            <input
+              id="ea-secondary-email-code"
+              type="text"
+              inputMode="numeric"
+              maxLength={6}
+              value={draftCode}
+              onChange={(event) =>
+                setDraftCode(event.target.value.replace(/\D/g, "").slice(0, 6))
+              }
+              placeholder="000000"
+              className={cn(eaInputClass, "max-w-xs tracking-[0.3em]")}
+              autoFocus
+            />
+            {error ? (
+              <p className="mt-3 text-sm text-[#dc2626]" role="alert">
+                {error}
+              </p>
+            ) : null}
+            <div className="mt-6 flex justify-end gap-3">
+              <button
+                type="button"
+                onClick={() => {
+                  setStep("form");
+                  setDraftCode("");
+                  setError(null);
+                }}
+                disabled={verifyingCode}
+                className="rounded-full border border-[#c5c9d0] bg-white px-6 py-2 text-sm font-medium text-[#1d2033] transition hover:bg-[#f9fafb] disabled:opacity-50"
+              >
+                Cancelar
+              </button>
+              <button
+                type="button"
+                onClick={() => void handleVerifyCode()}
+                disabled={verifyingCode || draftCode.length !== 6}
+                className="rounded-full bg-[#1d2033] px-6 py-2 text-sm font-medium text-white transition hover:bg-[#2d3148] disabled:opacity-50"
+              >
+                {verifyingCode ? "Verificando…" : "Verificar"}
+              </button>
+            </div>
+          </>
+        )}
+      </div>
+    );
+  }
+
+  return (
+    <div className="flex flex-wrap items-start justify-between gap-4 border-b border-[#e5e7eb] py-5 last:border-b-0">
+      <div className="min-w-0 flex-1">
+        <p className="text-sm font-semibold text-[#1d2033]">Correo secundario</p>
+        {hasVerified && masked ? (
+          <p className="mt-1 text-sm text-[#4b5563]">{masked}</p>
+        ) : (
+          <p className="mt-1 text-sm leading-relaxed text-[#4b5563]">
+            Recupera tu cuenta si pierdes el acceso al correo principal.
+          </p>
+        )}
+      </div>
+      {!hasVerified ? (
+        <EaActionLink
+          onClick={() => {
+            setStep("form");
+            setError(null);
+          }}
+        >
+          + Añadir
+        </EaActionLink>
+      ) : null}
+    </div>
+  );
+}
+
+function EaPrivacySecurityPanel() {
+  const { account } = useEaAccountContext();
+  const [panelView, setPanelView] = useState<PanelView>("privacy");
+  const [gameAdsActive, setGameAdsActive] = useState(false);
+  const [thirdPartyAdsActive, setThirdPartyAdsActive] = useState(false);
+
+  const twoFactorEnabled = account?.twoFactorEnabled ?? false;
+
+  if (panelView === "password") {
+    return <ChangePasswordFlow onCancel={() => setPanelView("privacy")} />;
+  }
+
+  if (panelView === "twoFactorSetup") {
+    return (
+      <TwoFactorSetupView
+        onBack={() => setPanelView("twoFactor")}
+        onComplete={() => setPanelView("privacy")}
+      />
+    );
+  }
+
+  if (panelView === "twoFactor") {
+    return (
+      <TwoFactorDetailView
+        onBack={() => setPanelView("privacy")}
+        onActivate={() => setPanelView("twoFactorSetup")}
+      />
+    );
+  }
+
+  return (
+    <div className={panelCardClass}>
       <h2 className="mb-2 text-xl font-semibold">Privacidad y seguridad</h2>
 
       <div className="border-b border-[#e5e7eb] py-5">
@@ -482,7 +1031,7 @@ function EaPrivacySecurityPanel() {
             <p className="text-sm font-semibold text-[#1d2033]">Contraseña</p>
             <p className="mt-1 font-mono text-sm tracking-widest text-[#4b5563]">••••••••</p>
           </div>
-          <EaActionLink onClick={() => setPasswordStep("verify")}>Editar</EaActionLink>
+          <EaActionLink onClick={() => setPanelView("password")}>Editar</EaActionLink>
         </div>
       </div>
 
@@ -505,53 +1054,15 @@ function EaPrivacySecurityPanel() {
         description="Añade una capa extra de seguridad a tu cuenta."
         trailing={
           <>
-            <span className="text-sm text-[#4b5563]">No</span>
+            <span className="text-sm text-[#4b5563]">{twoFactorEnabled ? "Sí" : "No"}</span>
             <IconChevronRight />
           </>
         }
-        onClick={() => undefined}
+        onClick={() => setPanelView("twoFactor")}
       />
 
       <div className="mt-8 border-t border-[#e5e7eb] pt-2">
-        <PrivacyRow
-          label="Passkeys"
-          description="Inicia sesión sin contraseña con un dispositivo de confianza."
-          trailing={<IconChevronRight />}
-          onClick={() => undefined}
-        />
-
-        <PrivacyRow
-          label="Dispositivos de confianza"
-          description="Gestiona los dispositivos que pueden acceder a tu cuenta sin verificación adicional."
-          trailing={<IconChevronRight />}
-          onClick={() => undefined}
-        />
-
-        <PrivacyRow
-          label="Correo secundario"
-          description="Recupera tu cuenta si pierdes el acceso al correo principal."
-          trailing={<EaActionLink>+ Añadir</EaActionLink>}
-        />
-
-        <PrivacyRow
-          label="Configuración de privacidad"
-          trailing={<IconChevronRight />}
-          onClick={() => undefined}
-        />
-
-        <PrivacyRow
-          label="Usuarios bloqueados"
-          trailing={<IconChevronRight />}
-          onClick={() => undefined}
-        />
-
-        <PrivacyRow
-          label="Descargar o eliminar tus datos de EA"
-          description="Solicita una copia de tus datos o elimina tu cuenta de EA."
-          trailing={<IconChevronRight />}
-          onClick={() => undefined}
-          className="border-b-0"
-        />
+        <SecondaryEmailSection />
       </div>
     </div>
   );

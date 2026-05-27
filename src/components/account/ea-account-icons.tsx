@@ -169,3 +169,16 @@ export function IconLogout() {
     </svg>
   );
 }
+
+export function IconChevronRight({ className }: { className?: string }) {
+  return (
+    <svg
+      viewBox="0 0 20 20"
+      fill="currentColor"
+      className={className ?? "h-4 w-4 shrink-0 text-[#6b7280]"}
+      aria-hidden
+    >
+      <path d="M7.21 14.77a.75.75 0 0 1 .02-1.06L10.94 10 7.23 6.29a.75.75 0 1 1 1.06-1.06l4.25 4.25a.75.75 0 0 1 0 1.06l-4.25 4.25a.75.75 0 0 1-1.08-.02Z" />
+    </svg>
+  );
+}

@@ -1,36 +1,16 @@
 "use client";
 
 import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import {
-  EaAccountAvatar,
-  EaCircleLogo,
-  EaRainbowAvatarRing,
-  IconCheckVerified,
-  IconFamily,
-  IconInfo,
-  IconLink,
-  IconLogout,
-  IconMail,
-  IconShield,
-  IconStar,
-  IconUser,
-  IconWallet,
-} from "@/components/account/ea-account-icons";
-import { LogoutOverlay } from "@/components/auth/LogoutOverlay";
-import {
-  AUTH_SESSION_CHANGE_EVENT,
-  clearAuthSession,
-  getAuthSession,
-} from "@/lib/auth-session";
+import { useMemo, useState } from "react";
+import { EaAccountShell } from "@/components/account/EaAccountShell";
+import { IconCheckVerified, IconInfo } from "@/components/account/ea-account-icons";
+import { getAuthSession } from "@/lib/auth-session";
+import { useEaAccountContext } from "@/lib/account/useEaAccountSession";
 import {
   buildBirthDateIso,
   formatBirthDateDisplay,
   parseBirthDateIso,
 } from "@/lib/auth/birth-date";
-import { maskEmail } from "@/lib/auth/mask-email";
 import { ALL_COUNTRIES_ES, DEFAULT_COUNTRY_CODE } from "@/lib/countries-es";
 import {
   DEFAULT_LANGUAGE_CODE,
@@ -47,21 +27,6 @@ type PhoneStep = "idle" | "form" | "code";
 
 const API_BASE_URL = "http://localhost:4000/api/v1";
 
-type AccountData = {
-  pilotName: string;
-  email: string;
-  maskedEmail: string;
-  memberSinceYear: number;
-  emailVerified: boolean;
-  firstName: string | null;
-  lastName: string | null;
-  birthDate: string | null;
-  countryCode: string | null;
-  languageCode: string;
-  phoneMasked: string | null;
-  phoneVerified: boolean;
-};
-
 function getCountryLabel(countryCode: string | null) {
   if (!countryCode) return "España";
   return ALL_COUNTRIES_ES.find((c) => c.value === countryCode)?.label ?? countryCode;
@@ -77,26 +42,6 @@ function formatDisplayName(firstName: string | null, lastName: string | null) {
   const parts = [firstName, lastName].filter(Boolean);
   return parts.length > 0 ? parts.join(" ") : null;
 }
-
-const SIDEBAR_ITEMS = [
-  { id: "info", label: "Información de la cuenta", href: "/informacion-cuenta", icon: IconUser, active: true },
-  { id: "connected", label: "Cuentas conectadas", href: "#", icon: IconLink },
-  { id: "privacy", label: "Privacidad y seguridad", href: "#", icon: IconShield },
-  { id: "comms", label: "Preferencias de comunicación", href: "#", icon: IconMail },
-  { id: "wallet", label: "Pago y Monedero", href: "#", icon: IconWallet },
-  { id: "family", label: "Gestión de la familia", href: "#", icon: IconFamily },
-  { id: "subs", label: "Membresías y suscripciones", href: "#", icon: IconStar },
-] as const;
-
-const MENU_LINKS = [
-  { label: "Información de la cuenta", href: "/informacion-cuenta" },
-  { label: "Cuentas conectadas", href: "#" },
-  { label: "Privacidad y seguridad", href: "#" },
-  { label: "Preferencias de comunicación", href: "#" },
-  { label: "Pago y Monedero", href: "#" },
-  { label: "Gestión de la familia", href: "#" },
-  { label: "Membresías y suscripciones", href: "#" },
-];
 
 function EaActionLink({
   children,
@@ -148,11 +93,8 @@ function AccountFieldRow({
   );
 }
 
-export function EaAccountPage() {
-  const router = useRouter();
-  const [loading, setLoading] = useState(true);
-  const [account, setAccount] = useState<AccountData | null>(null);
-  const [menuOpen, setMenuOpen] = useState(false);
+function EaAccountInfoPanel() {
+  const { account, setAccount } = useEaAccountContext();
   const [showDob, setShowDob] = useState(false);
   const [editingName, setEditingName] = useState(false);
   const [draftFirstName, setDraftFirstName] = useState("");
@@ -178,107 +120,13 @@ export function EaAccountPage() {
   const [draftLanguage, setDraftLanguage] = useState(DEFAULT_LANGUAGE_CODE);
   const [savingRegional, setSavingRegional] = useState(false);
   const [regionalError, setRegionalError] = useState<string | null>(null);
-  const [isLoggingOut, setIsLoggingOut] = useState(false);
-  const menuRef = useRef<HTMLDivElement>(null);
 
   const birthYears = useMemo(() => {
     const current = new Date().getFullYear();
     return Array.from({ length: 100 }, (_, index) => current - index);
   }, []);
 
-  const loadAccount = useCallback(async () => {
-    const session = getAuthSession();
-    if (!session) {
-      router.replace("/login");
-      return;
-    }
-
-    try {
-      const res = await fetch(`${API_BASE_URL}/auth/me`, {
-        headers: { Authorization: `Bearer ${session.accessToken}` },
-      });
-      const data = (await res.json().catch(() => ({}))) as {
-        pilotName?: string;
-        email?: string;
-        memberSinceYear?: number;
-        emailVerified?: boolean;
-        firstName?: string | null;
-        lastName?: string | null;
-        birthDate?: string | null;
-        countryCode?: string | null;
-        languageCode?: string;
-        phoneMasked?: string | null;
-        phoneVerified?: boolean;
-      };
-
-      if (!res.ok) {
-        clearAuthSession();
-        router.replace("/login");
-        return;
-      }
-
-      const email = data.email ?? "";
-      setAccount({
-        pilotName: data.pilotName ?? session.pilotName ?? "Piloto",
-        email,
-        maskedEmail: maskEmail(email),
-        memberSinceYear: data.memberSinceYear ?? new Date().getFullYear(),
-        emailVerified: data.emailVerified ?? true,
-        firstName: data.firstName ?? null,
-        lastName: data.lastName ?? null,
-        birthDate: data.birthDate ?? null,
-        countryCode: data.countryCode ?? null,
-        languageCode: data.languageCode ?? DEFAULT_LANGUAGE_CODE,
-        phoneMasked: data.phoneMasked ?? null,
-        phoneVerified: data.phoneVerified ?? false,
-      });
-    } catch {
-      const email = "";
-      setAccount({
-        pilotName: session.pilotName || "Piloto",
-        email,
-        maskedEmail: "",
-        memberSinceYear: new Date().getFullYear(),
-        emailVerified: true,
-        firstName: null,
-        lastName: null,
-        birthDate: null,
-        countryCode: null,
-        languageCode: DEFAULT_LANGUAGE_CODE,
-        phoneMasked: null,
-        phoneVerified: false,
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [router]);
-
-  useEffect(() => {
-    void loadAccount();
-  }, [loadAccount]);
-
-  useEffect(() => {
-    function onPointerDown(event: MouseEvent) {
-      if (!menuRef.current?.contains(event.target as Node)) {
-        setMenuOpen(false);
-      }
-    }
-    function onKeyDown(event: KeyboardEvent) {
-      if (event.key === "Escape") setMenuOpen(false);
-    }
-    function onAuthChange() {
-      if (!getAuthSession()) router.replace("/login");
-    }
-
-    document.addEventListener("mousedown", onPointerDown);
-    document.addEventListener("keydown", onKeyDown);
-    window.addEventListener(AUTH_SESSION_CHANGE_EVENT, onAuthChange);
-    return () => {
-      document.removeEventListener("mousedown", onPointerDown);
-      document.removeEventListener("keydown", onKeyDown);
-      window.removeEventListener(AUTH_SESSION_CHANGE_EVENT, onAuthChange);
-    };
-  }, [router]);
+  if (!account) return null;
 
   function handleStartAddPhone() {
     setEditingRegional(false);
@@ -614,177 +462,8 @@ export function EaAccountPage() {
     }
   }
 
-  function handleLogout() {
-    if (isLoggingOut || !account) return;
-    setMenuOpen(false);
-    setIsLoggingOut(true);
-  }
-
-  const handleLogoutComplete = useCallback(() => {
-    clearAuthSession();
-    setIsLoggingOut(false);
-    router.push("/");
-    router.refresh();
-  }, [router]);
-
-  if (loading) {
-    return (
-      <div className="fixed inset-0 z-[100] flex items-center justify-center bg-[#0a1628]">
-        <div className="h-10 w-10 animate-spin rounded-full border-2 border-white/30 border-t-white" />
-      </div>
-    );
-  }
-
-  if (!account) return null;
-
   return (
-    <>
-      {isLoggingOut ? (
-        <LogoutOverlay pilotName={account.pilotName} onComplete={handleLogoutComplete} />
-      ) : null}
-
-      <div className="fixed inset-0 z-[100] overflow-y-auto bg-[#0a1628] text-white">
-        <div
-          className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_80%_50%_at_50%_-10%,rgba(60,100,180,0.35),transparent_55%)]"
-          aria-hidden
-        />
-
-        <header className="relative border-b border-white/10 bg-[#0a1628]/90 backdrop-blur-sm">
-          <div className="mx-auto flex h-14 max-w-[1200px] items-center justify-between px-4 md:px-8">
-            <Link href="/" className="flex items-center gap-2.5">
-              <EaCircleLogo className="h-8 w-8" />
-              <span className="text-lg font-normal text-white">Cuenta</span>
-            </Link>
-
-            <div className="flex items-center gap-6">
-              <a
-                href="https://help.ea.com/es/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hidden text-sm text-white/90 hover:text-white sm:inline"
-              >
-                Ayuda de EA
-              </a>
-
-              <div ref={menuRef} className="relative">
-                <button
-                  type="button"
-                  aria-expanded={menuOpen}
-                  aria-haspopup="menu"
-                  onClick={() => setMenuOpen((value) => !value)}
-                  className="flex items-center gap-2 rounded-full outline-none ring-white/40 focus-visible:ring-2"
-                >
-                  <EaRainbowAvatarRing>
-                    <EaAccountAvatar size="sm" />
-                  </EaRainbowAvatarRing>
-                </button>
-
-                {menuOpen ? (
-                  <div
-                    role="menu"
-                    className="absolute right-0 top-full z-10 mt-2 w-[280px] overflow-hidden rounded-md border border-white/10 bg-white text-[#1d2033] shadow-[0_12px_40px_rgba(0,0,0,0.45)]"
-                  >
-                    <div className="flex items-center gap-3 border-b border-[#e5e7eb] px-4 py-3">
-                      <EaAccountAvatar size="sm" />
-                      <div className="min-w-0">
-                        <p className="truncate text-sm font-semibold">{account.pilotName}</p>
-                        <p className="text-xs text-[#6b7280]">
-                          Miembro desde {account.memberSinceYear}
-                        </p>
-                      </div>
-                    </div>
-                    <nav className="py-1">
-                      {MENU_LINKS.map((item) => (
-                        <Link
-                          key={item.label}
-                          href={item.href}
-                          role="menuitem"
-                          onClick={() => setMenuOpen(false)}
-                          className="block px-4 py-2.5 text-sm text-[#1d2033] hover:bg-[#f3f4f6]"
-                        >
-                          {item.label}
-                        </Link>
-                      ))}
-                    </nav>
-                    <div className="border-t border-[#e5e7eb] py-1">
-                      <button
-                        type="button"
-                        role="menuitem"
-                        onClick={handleLogout}
-                        className="flex w-full items-center gap-2 px-4 py-2.5 text-left text-sm text-[#1d2033] hover:bg-[#f3f4f6]"
-                      >
-                        <IconLogout />
-                        Cierra sesión con tu Cuenta EA
-                      </button>
-                    </div>
-                    <div className="flex gap-4 border-t border-[#e5e7eb] px-4 py-2.5 text-xs text-[#2766ec]">
-                      <a href="#" className="hover:underline">
-                        Mis incidencias
-                      </a>
-                      <a
-                        href="https://help.ea.com/es/"
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="hover:underline"
-                      >
-                        Ayuda de EA
-                      </a>
-                    </div>
-                  </div>
-                ) : null}
-              </div>
-            </div>
-          </div>
-        </header>
-
-        <section className="relative mx-auto max-w-[1200px] px-4 pb-6 pt-8 md:px-8">
-          <div className="flex items-center gap-5">
-            <EaRainbowAvatarRing>
-              <EaAccountAvatar size="lg" />
-            </EaRainbowAvatarRing>
-            <div>
-              <h1 className="text-3xl font-normal tracking-tight md:text-4xl">
-                {account.pilotName}
-              </h1>
-              <p className="mt-1 text-sm text-white/70">
-                Miembro desde {account.memberSinceYear}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <div className="relative mx-auto flex max-w-[1200px] flex-col gap-0 px-4 pb-16 md:flex-row md:px-8">
-          <aside className="mb-6 w-full shrink-0 md:mb-0 md:w-[260px]">
-            <nav className="overflow-hidden rounded-sm bg-white/[0.06] backdrop-blur-sm">
-              {SIDEBAR_ITEMS.map((item) => {
-                const Icon = item.icon;
-                return (
-                  <Link
-                    key={item.id}
-                    href={item.href}
-                    className={cn(
-                      "relative flex items-center gap-3 border-b border-white/5 px-4 py-3.5 text-sm transition-colors last:border-b-0",
-                      "active" in item && item.active
-                        ? "bg-white/10 font-medium text-white"
-                        : "text-white/75 hover:bg-white/5 hover:text-white"
-                    )}
-                  >
-                    {"active" in item && item.active ? (
-                      <span
-                        className="absolute left-0 top-0 h-full w-[3px] bg-[#2766ec]"
-                        aria-hidden
-                      />
-                    ) : null}
-                    <Icon />
-                    {item.label}
-                  </Link>
-                );
-              })}
-            </nav>
-          </aside>
-
-          <main className="min-w-0 flex-1 md:pl-6">
-            <div className="rounded-sm bg-white px-6 py-6 text-[#1d2033] shadow-[0_4px_24px_rgba(0,0,0,0.25)] md:px-8 md:py-8">
+    <div className="rounded-sm bg-white px-6 py-6 text-[#1d2033] shadow-[0_4px_24px_rgba(0,0,0,0.25)] md:px-8 md:py-8">
               <h2 className="mb-2 text-xl font-semibold">Información de la cuenta</h2>
 
               <AccountFieldRow label="EA ID">
@@ -1259,10 +938,14 @@ export function EaAccountPage() {
                   <p className="text-xs text-[#6b7280]">Cuenta vinculada</p>
                 </div>
               </div>
-            </div>
-          </main>
-        </div>
-      </div>
-    </>
+    </div>
+  );
+}
+
+export function EaAccountPage() {
+  return (
+    <EaAccountShell>
+      <EaAccountInfoPanel />
+    </EaAccountShell>
   );
 }

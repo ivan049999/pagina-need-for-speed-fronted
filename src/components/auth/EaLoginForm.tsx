@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
+import { setAuthSession } from "@/lib/auth-session";
 import { cn } from "@/lib/utils/cn";
 import {
   EaAuthCard,
@@ -73,15 +74,24 @@ export function EaLoginForm() {
     if (!canSignIn) return;
     setError(null);
     setSigningIn(true);
-    postJson<{ ok: true; accessToken: string }>(`${API_BASE_URL}/auth/login`, {
+    postJson<{
+      ok: true;
+      accessToken: string;
+      refreshToken?: string;
+      pilotName: string;
+    }>(`${API_BASE_URL}/auth/login`, {
       email: email.trim(),
       password,
     })
       .then((data) => {
-        if (typeof window !== "undefined") {
-          const storage = staySignedIn ? localStorage : sessionStorage;
-          storage.setItem("nfs_access_token", data.accessToken);
-        }
+        setAuthSession(
+          {
+            accessToken: data.accessToken,
+            refreshToken: data.refreshToken,
+            pilotName: data.pilotName,
+          },
+          staySignedIn
+        );
         router.push("/");
       })
       .catch((err: unknown) => {

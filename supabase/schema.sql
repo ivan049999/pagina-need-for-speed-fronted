@@ -18,6 +18,10 @@ CREATE TYPE public.car_tier AS ENUM (
 CREATE TABLE public.profiles (
   id            UUID PRIMARY KEY REFERENCES auth.users (id) ON DELETE CASCADE,
   pilot_name    TEXT NOT NULL,
+  first_name    TEXT,
+  last_name     TEXT,
+  birth_date    DATE,
+  country_code  TEXT,
   avatar_url    TEXT,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()

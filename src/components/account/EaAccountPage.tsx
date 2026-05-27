@@ -25,7 +25,9 @@ import {
   clearAuthSession,
   getAuthSession,
 } from "@/lib/auth-session";
+import { formatBirthDateDisplay } from "@/lib/auth/birth-date";
 import { maskEmail } from "@/lib/auth/mask-email";
+import { ALL_COUNTRIES_ES } from "@/lib/countries-es";
 import { cn } from "@/lib/utils/cn";
 
 const API_BASE_URL = "http://localhost:4000/api/v1";
@@ -36,7 +38,24 @@ type AccountData = {
   maskedEmail: string;
   memberSinceYear: number;
   emailVerified: boolean;
+  firstName: string | null;
+  lastName: string | null;
+  birthDate: string | null;
+  countryCode: string | null;
 };
+
+function getCountryLabel(countryCode: string | null) {
+  if (!countryCode) return "España";
+  return ALL_COUNTRIES_ES.find((c) => c.value === countryCode)?.label ?? countryCode;
+}
+
+const eaNameInputClass =
+  "mt-1.5 w-full rounded-md border border-[#c5c9d0] bg-white px-3 py-2.5 text-sm text-[#1d2033] outline-none transition placeholder:text-[#9ca3af] focus:border-[#1d2033] focus:ring-1 focus:ring-[#1d2033]/20";
+
+function formatDisplayName(firstName: string | null, lastName: string | null) {
+  const parts = [firstName, lastName].filter(Boolean);
+  return parts.length > 0 ? parts.join(" ") : null;
+}
 
 const SIDEBAR_ITEMS = [
   { id: "info", label: "Información de la cuenta", href: "/informacion-cuenta", icon: IconUser, active: true },
@@ -114,6 +133,11 @@ export function EaAccountPage() {
   const [account, setAccount] = useState<AccountData | null>(null);
   const [menuOpen, setMenuOpen] = useState(false);
   const [showDob, setShowDob] = useState(false);
+  const [editingName, setEditingName] = useState(false);
+  const [draftFirstName, setDraftFirstName] = useState("");
+  const [draftLastName, setDraftLastName] = useState("");
+  const [savingName, setSavingName] = useState(false);
+  const [nameError, setNameError] = useState<string | null>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -133,6 +157,10 @@ export function EaAccountPage() {
         email?: string;
         memberSinceYear?: number;
         emailVerified?: boolean;
+        firstName?: string | null;
+        lastName?: string | null;
+        birthDate?: string | null;
+        countryCode?: string | null;
       };
 
       if (!res.ok) {
@@ -148,6 +176,10 @@ export function EaAccountPage() {
         maskedEmail: maskEmail(email),
         memberSinceYear: data.memberSinceYear ?? new Date().getFullYear(),
         emailVerified: data.emailVerified ?? true,
+        firstName: data.firstName ?? null,
+        lastName: data.lastName ?? null,
+        birthDate: data.birthDate ?? null,
+        countryCode: data.countryCode ?? null,
       });
     } catch {
       const email = "";
@@ -157,6 +189,10 @@ export function EaAccountPage() {
         maskedEmail: "",
         memberSinceYear: new Date().getFullYear(),
         emailVerified: true,
+        firstName: null,
+        lastName: null,
+        birthDate: null,
+        countryCode: null,
       });
     } finally {
       setLoading(false);
@@ -189,6 +225,72 @@ export function EaAccountPage() {
       window.removeEventListener(AUTH_SESSION_CHANGE_EVENT, onAuthChange);
     };
   }, [router]);
+
+  function handleStartEditName() {
+    if (!account) return;
+    setDraftFirstName(account.firstName ?? "");
+    setDraftLastName(account.lastName ?? "");
+    setNameError(null);
+    setEditingName(true);
+  }
+
+  function handleCancelEditName() {
+    setEditingName(false);
+    setNameError(null);
+  }
+
+  async function handleSaveName() {
+    const session = getAuthSession();
+    if (!session || !account) return;
+
+    const firstName = draftFirstName.trim();
+    const lastName = draftLastName.trim();
+    if (!firstName || !lastName) {
+      setNameError("Completa nombre y apellido.");
+      return;
+    }
+
+    setSavingName(true);
+    setNameError(null);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/profile/name`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify({ firstName, lastName }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        firstName?: string;
+        lastName?: string;
+        error?: string;
+      };
+
+      if (!res.ok) {
+        setNameError(
+          typeof data.error === "string" ? data.error : "No se pudo guardar el nombre."
+        );
+        return;
+      }
+
+      setAccount((prev) =>
+        prev
+          ? {
+              ...prev,
+              firstName: data.firstName ?? firstName,
+              lastName: data.lastName ?? lastName,
+            }
+          : prev
+      );
+      setEditingName(false);
+    } catch {
+      setNameError("No se pudo guardar el nombre. Inténtalo de nuevo.");
+    } finally {
+      setSavingName(false);
+    }
+  }
 
   function handleLogout() {
     if (isLoggingOut || !account) return;
@@ -367,20 +469,96 @@ export function EaAccountPage() {
                 <p>{account.pilotName}</p>
               </AccountFieldRow>
 
-              <AccountFieldRow label="Nombre">
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-[#9ca3af]">—</span>
-                  <EaActionLink>Editar</EaActionLink>
-                </div>
-              </AccountFieldRow>
+              <div className="border-b border-[#e5e7eb] py-5">
+                {editingName ? (
+                  <div>
+                    <div className="grid gap-5 sm:grid-cols-2">
+                      <div>
+                        <label htmlFor="ea-first-name" className="text-sm font-semibold text-[#1d2033]">
+                          Nombre
+                        </label>
+                        <input
+                          id="ea-first-name"
+                          type="text"
+                          value={draftFirstName}
+                          onChange={(event) => setDraftFirstName(event.target.value)}
+                          placeholder="Escribe tu nombre"
+                          className={eaNameInputClass}
+                          autoFocus
+                        />
+                      </div>
+                      <div>
+                        <label htmlFor="ea-last-name" className="text-sm font-semibold text-[#1d2033]">
+                          Apellido
+                        </label>
+                        <input
+                          id="ea-last-name"
+                          type="text"
+                          value={draftLastName}
+                          onChange={(event) => setDraftLastName(event.target.value)}
+                          placeholder="Escribe tu apellido"
+                          className={eaNameInputClass}
+                        />
+                      </div>
+                    </div>
+                    {nameError ? (
+                      <p className="mt-3 text-sm text-[#dc2626]" role="alert">
+                        {nameError}
+                      </p>
+                    ) : null}
+                    <div className="mt-6 flex justify-end gap-3">
+                      <button
+                        type="button"
+                        onClick={handleCancelEditName}
+                        disabled={savingName}
+                        className="rounded-full border border-[#c5c9d0] bg-white px-6 py-2 text-sm font-medium text-[#1d2033] transition hover:bg-[#f9fafb] disabled:opacity-50"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void handleSaveName()}
+                        disabled={savingName}
+                        className="rounded-full bg-[#1d2033] px-6 py-2 text-sm font-medium text-white transition hover:bg-[#2d3148] disabled:opacity-50"
+                      >
+                        {savingName ? "Guardando…" : "Guardar"}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <div className="flex flex-wrap items-start justify-between gap-4">
+                    <div className="min-w-0 flex-1">
+                      <p className="text-sm font-semibold text-[#1d2033]">Nombre</p>
+                      <p className="mt-1 text-sm text-[#4b5563]">
+                        {formatDisplayName(account.firstName, account.lastName) ?? (
+                          <span className="text-[#9ca3af]">—</span>
+                        )}
+                      </p>
+                    </div>
+                    <EaActionLink onClick={handleStartEditName}>Editar</EaActionLink>
+                  </div>
+                )}
+              </div>
 
               <AccountFieldRow label="Fecha de nacimiento">
                 <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span>{showDob ? "01/01/1990" : "••/••/••••"}</span>
+                  <span>
+                    {showDob ? (
+                      account.birthDate ? (
+                        formatBirthDateDisplay(account.birthDate)
+                      ) : (
+                        <span className="text-[#9ca3af]">—</span>
+                      )
+                    ) : (
+                      "••/••/••••"
+                    )}
+                  </span>
                   <div className="flex items-center gap-4">
-                    <EaActionLink onClick={() => setShowDob((value) => !value)}>
-                      {showDob ? "Ocultar" : "Mostrar"}
-                    </EaActionLink>
+                    {account.birthDate ? (
+                      <EaActionLink onClick={() => setShowDob((value) => !value)}>
+                        {showDob ? "Ocultar" : "Mostrar"}
+                      </EaActionLink>
+                    ) : null}
                     <EaActionLink>Editar</EaActionLink>
                   </div>
                 </div>
@@ -419,7 +597,7 @@ export function EaAccountPage() {
               <AccountFieldRow label="Ajustes regionales">
                 <div className="flex flex-wrap items-start justify-between gap-2">
                   <div>
-                    <p>País/región: España</p>
+                    <p>País/región: {getCountryLabel(account.countryCode)}</p>
                     <p className="mt-0.5">Idioma: Español</p>
                   </div>
                   <EaActionLink>Editar</EaActionLink>

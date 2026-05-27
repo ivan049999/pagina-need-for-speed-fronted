@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { HiOutlineEye, HiOutlineEyeOff } from "react-icons/hi";
+import { buildBirthDateIso } from "@/lib/auth/birth-date";
 import { ALL_COUNTRIES_ES, DEFAULT_COUNTRY_CODE } from "@/lib/countries-es";
 import { cn } from "@/lib/utils/cn";
 import {
@@ -176,6 +177,8 @@ export function EaRegisterForm() {
       email,
       eaId: eaId.trim(),
       password,
+      birthDate: buildBirthDateIso(day, month, year),
+      countryCode: country,
     })
       .then(() => {
         router.push("/login");

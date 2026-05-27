@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { LogoutOverlay } from "@/components/auth/LogoutOverlay";
 import {
   AUTH_SESSION_CHANGE_EVENT,
   clearAuthSession,
@@ -62,6 +63,8 @@ export function ProfileAccountDropdown() {
   const [open, setOpen] = useState(false);
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [pilotName, setPilotName] = useState("");
+  const [isLoggingOut, setIsLoggingOut] = useState(false);
+  const [logoutPilotName, setLogoutPilotName] = useState("");
   const ref = useRef<HTMLDivElement>(null);
 
   const syncSession = useCallback(async () => {
@@ -125,12 +128,23 @@ export function ProfileAccountDropdown() {
   }, [syncSession]);
 
   function handleLogout() {
-    clearAuthSession();
+    if (isLoggingOut) return;
+    setLogoutPilotName(pilotName);
     setOpen(false);
-    router.refresh();
+    setIsLoggingOut(true);
   }
 
+  const handleLogoutComplete = useCallback(() => {
+    clearAuthSession();
+    setIsLoggingOut(false);
+    router.refresh();
+  }, [router]);
+
   return (
+    <>
+      {isLoggingOut ? (
+        <LogoutOverlay pilotName={logoutPilotName} onComplete={handleLogoutComplete} />
+      ) : null}
     <div ref={ref} className="relative">
       <button
         type="button"
@@ -219,8 +233,9 @@ export function ProfileAccountDropdown() {
             <button
               type="button"
               role="menuitem"
+              disabled={isLoggingOut}
               onClick={handleLogout}
-              className="block w-full px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/5"
+              className="block w-full px-4 py-2.5 text-left text-sm text-white transition-colors hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-50"
             >
               Cierra sesión
             </button>
@@ -228,5 +243,6 @@ export function ProfileAccountDropdown() {
         </div>
       ) : null}
     </div>
+    </>
   );
 }

@@ -77,6 +77,250 @@
   }
 }
 
+/* —— Logout overlay —— */
+@keyframes nfs-logout-overlay-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes nfs-logout-overlay-out {
+  from {
+    opacity: 1;
+  }
+  to {
+    opacity: 0;
+  }
+}
+
+@keyframes nfs-logout-panel-in {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(16px);
+    filter: blur(4px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+    filter: blur(0);
+  }
+}
+
+@keyframes nfs-logout-panel-glow {
+  0%,
+  100% {
+    opacity: 0.35;
+  }
+  50% {
+    opacity: 0.85;
+  }
+}
+
+@keyframes nfs-logout-name-glitch {
+  0%,
+  88%,
+  100% {
+    transform: translate(0);
+    text-shadow: none;
+    opacity: 1;
+  }
+  90% {
+    transform: translate(-2px, 1px);
+    text-shadow: 2px 0 var(--color-nfs-neon), -2px 0 #ff3d00;
+    opacity: 0.85;
+  }
+  92% {
+    transform: translate(2px, -1px);
+    text-shadow: -2px 0 var(--color-nfs-neon), 2px 0 #ff3d00;
+    opacity: 0.9;
+  }
+  94% {
+    transform: translate(-1px, 0);
+    text-shadow: 1px 0 var(--color-nfs-neon);
+    opacity: 0.95;
+  }
+}
+
+@keyframes nfs-logout-avatar-dissolve {
+  0% {
+    opacity: 1;
+    filter: brightness(1);
+    transform: scale(1);
+  }
+  40% {
+    opacity: 0.7;
+    filter: brightness(1.4) contrast(1.2);
+  }
+  100% {
+    opacity: 0.15;
+    filter: brightness(0.4) blur(2px);
+    transform: scale(0.94);
+  }
+}
+
+@keyframes nfs-logout-avatar-scan {
+  0% {
+    transform: translateY(-100%);
+    opacity: 0.9;
+  }
+  100% {
+    transform: translateY(100%);
+    opacity: 0;
+  }
+}
+
+@keyframes nfs-logout-particle-drift {
+  0% {
+    transform: translateX(-120%) skewX(-12deg);
+    opacity: 0;
+  }
+  15% {
+    opacity: 0.7;
+  }
+  85% {
+    opacity: 0.5;
+  }
+  100% {
+    transform: translateX(120vw) skewX(-12deg);
+    opacity: 0;
+  }
+}
+
+@keyframes nfs-logout-check-pop {
+  0% {
+    transform: scale(0.4);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.15);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+@keyframes nfs-logout-scanlines {
+  0% {
+    background-position: 0 0;
+  }
+  100% {
+    background-position: 0 100%;
+  }
+}
+
+.nfs-logout-overlay {
+  animation: nfs-logout-overlay-in 0.35s ease-out forwards;
+}
+
+.nfs-logout-overlay--exit {
+  animation: nfs-logout-overlay-out 0.35s ease-in forwards;
+}
+
+.nfs-logout-backdrop {
+  background:
+    radial-gradient(ellipse 80% 60% at 50% 40%, rgba(var(--nfs-neon-rgb), 0.08), transparent 70%),
+    rgba(6, 8, 12, 0.88);
+  backdrop-filter: blur(10px);
+}
+
+.nfs-logout-scanlines {
+  background: repeating-linear-gradient(
+    0deg,
+    transparent,
+    transparent 2px,
+    rgba(255, 255, 255, 0.02) 2px,
+    rgba(255, 255, 255, 0.02) 4px
+  );
+  animation: nfs-logout-scanlines 6s linear infinite;
+  opacity: 0.5;
+  mix-blend-mode: overlay;
+}
+
+.nfs-logout-particle {
+  animation: nfs-logout-particle-drift 1.8s ease-in-out infinite;
+}
+
+.nfs-logout-panel--in {
+  animation: nfs-logout-panel-in 0.42s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+.nfs-logout-panel-glow {
+  background: radial-gradient(
+    circle at 50% 0%,
+    rgba(var(--nfs-neon-rgb), 0.2),
+    transparent 65%
+  );
+  animation: nfs-logout-panel-glow 1.4s ease-in-out infinite;
+}
+
+.nfs-logout-panel--pulse .nfs-logout-panel-glow {
+  animation-duration: 0.6s;
+}
+
+.nfs-logout-name--glitch {
+  animation: nfs-logout-name-glitch 2.2s steps(1, end) infinite;
+}
+
+.nfs-logout-avatar--dissolve {
+  animation: nfs-logout-avatar-dissolve 0.55s ease-in forwards;
+}
+
+.nfs-logout-avatar-scan {
+  background: linear-gradient(
+    180deg,
+    transparent 0%,
+    rgba(var(--nfs-neon-rgb), 0.85) 48%,
+    transparent 100%
+  );
+  animation: nfs-logout-avatar-scan 0.55s ease-in-out forwards;
+}
+
+.nfs-logout-progress-bar {
+  box-shadow:
+    0 0 12px rgba(var(--nfs-neon-rgb), 0.7),
+    0 0 24px rgba(var(--nfs-neon-rgb), 0.35);
+}
+
+.nfs-logout-check {
+  text-shadow:
+    0 0 12px rgba(var(--nfs-neon-rgb), 0.9),
+    0 0 28px rgba(var(--nfs-neon-rgb), 0.5);
+  animation: nfs-logout-check-pop 0.45s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .nfs-logout-overlay,
+  .nfs-logout-overlay--exit,
+  .nfs-logout-panel--in,
+  .nfs-logout-name--glitch,
+  .nfs-logout-avatar--dissolve,
+  .nfs-logout-avatar-scan,
+  .nfs-logout-particle,
+  .nfs-logout-scanlines,
+  .nfs-logout-check,
+  .nfs-logout-panel-glow {
+    animation: none !important;
+  }
+}
+
+.nfs-reduced-motion .nfs-logout-overlay,
+.nfs-reduced-motion .nfs-logout-overlay--exit,
+.nfs-reduced-motion .nfs-logout-panel--in,
+.nfs-reduced-motion .nfs-logout-name--glitch,
+.nfs-reduced-motion .nfs-logout-avatar--dissolve,
+.nfs-reduced-motion .nfs-logout-avatar-scan,
+.nfs-reduced-motion .nfs-logout-particle,
+.nfs-reduced-motion .nfs-logout-scanlines,
+.nfs-reduced-motion .nfs-logout-check,
+.nfs-reduced-motion .nfs-logout-panel-glow {
+  animation: none !important;
+}
+
 .nfs-settings-panel.animate-in {
   animation: nfs-settings-in 0.22s ease-out;
 }

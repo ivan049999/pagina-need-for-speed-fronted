@@ -32,7 +32,13 @@ import {
 } from "@/lib/auth/birth-date";
 import { maskEmail } from "@/lib/auth/mask-email";
 import { ALL_COUNTRIES_ES } from "@/lib/countries-es";
+import {
+  DEFAULT_PHONE_DIAL_CODE,
+  PHONE_COUNTRY_OPTIONS,
+} from "@/lib/phone/calling-codes";
 import { cn } from "@/lib/utils/cn";
+
+type PhoneStep = "idle" | "form" | "code";
 
 const API_BASE_URL = "http://localhost:4000/api/v1";
 
@@ -46,6 +52,8 @@ type AccountData = {
   lastName: string | null;
   birthDate: string | null;
   countryCode: string | null;
+  phoneMasked: string | null;
+  phoneVerified: boolean;
 };
 
 function getCountryLabel(countryCode: string | null) {
@@ -151,6 +159,14 @@ export function EaAccountPage() {
   const [draftBirthDay, setDraftBirthDay] = useState("");
   const [savingBirthDate, setSavingBirthDate] = useState(false);
   const [birthDateError, setBirthDateError] = useState<string | null>(null);
+  const [phoneStep, setPhoneStep] = useState<PhoneStep>("idle");
+  const [draftDialCode, setDraftDialCode] = useState(DEFAULT_PHONE_DIAL_CODE);
+  const [draftPhoneNumber, setDraftPhoneNumber] = useState("");
+  const [draftPhoneCode, setDraftPhoneCode] = useState("");
+  const [sendingPhoneCode, setSendingPhoneCode] = useState(false);
+  const [verifyingPhoneCode, setVerifyingPhoneCode] = useState(false);
+  const [phoneError, setPhoneError] = useState<string | null>(null);
+  const [phoneDevHint, setPhoneDevHint] = useState<string | null>(null);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
   const menuRef = useRef<HTMLDivElement>(null);
 
@@ -179,6 +195,8 @@ export function EaAccountPage() {
         lastName?: string | null;
         birthDate?: string | null;
         countryCode?: string | null;
+        phoneMasked?: string | null;
+        phoneVerified?: boolean;
       };
 
       if (!res.ok) {
@@ -198,6 +216,8 @@ export function EaAccountPage() {
         lastName: data.lastName ?? null,
         birthDate: data.birthDate ?? null,
         countryCode: data.countryCode ?? null,
+        phoneMasked: data.phoneMasked ?? null,
+        phoneVerified: data.phoneVerified ?? false,
       });
     } catch {
       const email = "";
@@ -211,6 +231,8 @@ export function EaAccountPage() {
         lastName: null,
         birthDate: null,
         countryCode: null,
+        phoneMasked: null,
+        phoneVerified: false,
       });
     } finally {
       setLoading(false);
@@ -244,8 +266,138 @@ export function EaAccountPage() {
     };
   }, [router]);
 
+  function handleStartAddPhone() {
+    setEditingName(false);
+    setEditingBirthDate(false);
+    setDraftDialCode(DEFAULT_PHONE_DIAL_CODE);
+    setDraftPhoneNumber("");
+    setDraftPhoneCode("");
+    setPhoneError(null);
+    setPhoneDevHint(null);
+    setPhoneStep("form");
+  }
+
+  function handleCancelPhone() {
+    setPhoneStep("idle");
+    setPhoneError(null);
+    setPhoneDevHint(null);
+    setDraftPhoneCode("");
+  }
+
+  async function handleSendPhoneCode() {
+    const session = getAuthSession();
+    if (!session) return;
+
+    const digits = draftPhoneNumber.replace(/\D/g, "");
+    if (digits.length < 6) {
+      setPhoneError("Introduce un número de teléfono válido.");
+      return;
+    }
+
+    setSendingPhoneCode(true);
+    setPhoneError(null);
+    setPhoneDevHint(null);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/profile/phone/send-code`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify({ dialCode: draftDialCode, phoneNumber: digits }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        error?: string;
+        delivery?: string;
+        message?: string;
+      };
+
+      if (!res.ok) {
+        setPhoneError(
+          typeof data.error === "string" ? data.error : "No se pudo enviar el código."
+        );
+        return;
+      }
+
+      if (data.delivery === "dev-console") {
+        setPhoneDevHint(
+          data.message ??
+            "No se pudo enviar el SMS (cuenta Trial o país restringido). Abre la terminal del backend en tu PC: ahí verás el código de 6 dígitos."
+        );
+      }
+
+      setPhoneStep("code");
+      setDraftPhoneCode("");
+    } catch {
+      setPhoneError("No se pudo enviar el código. Inténtalo de nuevo.");
+    } finally {
+      setSendingPhoneCode(false);
+    }
+  }
+
+  async function handleVerifyPhoneCode() {
+    const session = getAuthSession();
+    if (!session || !account) return;
+
+    if (!/^\d{6}$/.test(draftPhoneCode.trim())) {
+      setPhoneError("El código debe tener 6 dígitos.");
+      return;
+    }
+
+    setVerifyingPhoneCode(true);
+    setPhoneError(null);
+
+    try {
+      const res = await fetch(`${API_BASE_URL}/auth/profile/phone/verify`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${session.accessToken}`,
+        },
+        body: JSON.stringify({ code: draftPhoneCode.trim() }),
+      });
+      const data = (await res.json().catch(() => ({}))) as {
+        ok?: boolean;
+        code?: string;
+        phoneMasked?: string;
+        phoneVerified?: boolean;
+        error?: string;
+      };
+
+      if (!res.ok) {
+        if (data.code === "CODE_INVALID") {
+          setPhoneError("Código incorrecto.");
+        } else if (data.code === "CODE_INVALID_OR_EXPIRED") {
+          setPhoneError("Código caducado. Envía uno nuevo.");
+        } else {
+          setPhoneError(
+            typeof data.error === "string" ? data.error : "No se pudo verificar el código."
+          );
+        }
+        return;
+      }
+
+      setAccount((prev) =>
+        prev
+          ? {
+              ...prev,
+              phoneMasked: data.phoneMasked ?? prev.phoneMasked,
+              phoneVerified: data.phoneVerified ?? true,
+            }
+          : prev
+      );
+      setPhoneStep("idle");
+    } catch {
+      setPhoneError("No se pudo verificar el código. Inténtalo de nuevo.");
+    } finally {
+      setVerifyingPhoneCode(false);
+    }
+  }
+
   function handleStartEditName() {
     if (!account) return;
+    setPhoneStep("idle");
     setEditingBirthDate(false);
     setDraftFirstName(account.firstName ?? "");
     setDraftLastName(account.lastName ?? "");
@@ -313,6 +465,7 @@ export function EaAccountPage() {
 
   function handleStartEditBirthDate() {
     if (!account) return;
+    setPhoneStep("idle");
     setEditingName(false);
     const parsed = parseBirthDateIso(account.birthDate);
     setDraftBirthYear(parsed.year);
@@ -757,17 +910,169 @@ export function EaAccountPage() {
                 </div>
               </AccountFieldRow>
 
-              <AccountFieldRow
-                label="Número de teléfono"
-                hint="Un número de teléfono mejora y protege tu cuenta con EA."
-              >
-                <div className="flex flex-wrap items-center justify-between gap-2">
-                  <span className="text-[#6b7280]">
-                    No se ha añadido ningún número de teléfono.
-                  </span>
-                  <EaActionLink>+ Añadir</EaActionLink>
-                </div>
-              </AccountFieldRow>
+              <div className="border-b border-[#e5e7eb] py-5">
+                {phoneStep === "form" ? (
+                  <div>
+                    <p className="text-sm font-semibold text-[#1d2033]">Número de teléfono</p>
+                    <div className="mt-3 flex flex-col gap-3 sm:flex-row">
+                      <div className="sm:w-[45%]">
+                        <label htmlFor="ea-phone-country" className="sr-only">
+                          Prefijo
+                        </label>
+                        <select
+                          id="ea-phone-country"
+                          value={draftDialCode}
+                          onChange={(event) => setDraftDialCode(event.target.value)}
+                          className={eaBirthSelectClass}
+                        >
+                          {PHONE_COUNTRY_OPTIONS.map((option) => (
+                            <option key={option.iso} value={option.dialCode}>
+                              {option.label}
+                            </option>
+                          ))}
+                        </select>
+                      </div>
+                      <div className="min-w-0 flex-1">
+                        <label htmlFor="ea-phone-number" className="sr-only">
+                          Número de teléfono
+                        </label>
+                        <input
+                          id="ea-phone-number"
+                          type="tel"
+                          inputMode="tel"
+                          value={draftPhoneNumber}
+                          onChange={(event) => setDraftPhoneNumber(event.target.value)}
+                          placeholder="Introducir número de teléfono"
+                          className={eaNameInputClass}
+                          autoFocus
+                        />
+                      </div>
+                    </div>
+                    <p className="mt-3 flex items-start gap-2 text-xs leading-relaxed text-[#6b7280]">
+                      <IconInfo />
+                      <span>
+                        Enviaremos un código de verificación a este número de teléfono.
+                      </span>
+                    </p>
+                    {phoneError ? (
+                      <p className="mt-3 text-sm text-[#dc2626]" role="alert">
+                        {phoneError}
+                      </p>
+                    ) : null}
+                    <div className="mt-6 flex justify-end gap-3">
+                      <button
+                        type="button"
+                        onClick={handleCancelPhone}
+                        disabled={sendingPhoneCode}
+                        className="rounded-full border border-[#c5c9d0] bg-white px-6 py-2 text-sm font-medium text-[#1d2033] transition hover:bg-[#f9fafb] disabled:opacity-50"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void handleSendPhoneCode()}
+                        disabled={sendingPhoneCode}
+                        className="rounded-full bg-[#1d2033] px-6 py-2 text-sm font-medium text-white transition hover:bg-[#2d3148] disabled:opacity-50"
+                      >
+                        {sendingPhoneCode ? "Enviando…" : "Enviar código"}
+                      </button>
+                    </div>
+                  </div>
+                ) : phoneStep === "code" ? (
+                  <div>
+                    <p className="text-sm font-semibold text-[#1d2033]">Número de teléfono</p>
+                    {phoneDevHint ? (
+                      <p
+                        className="mt-3 rounded-md border border-amber-200 bg-amber-50 px-3 py-2.5 text-xs leading-relaxed text-amber-900"
+                        role="status"
+                      >
+                        {phoneDevHint}
+                      </p>
+                    ) : (
+                      <p className="mt-1 text-sm text-[#4b5563]">
+                        Introduce el código de 6 dígitos enviado a{" "}
+                        <span className="font-medium text-[#1d2033]">
+                          {draftDialCode} {draftPhoneNumber.replace(/\D/g, "").slice(0, 2)}••••
+                        </span>
+                      </p>
+                    )}
+                    <input
+                      id="ea-phone-code"
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={6}
+                      value={draftPhoneCode}
+                      onChange={(event) =>
+                        setDraftPhoneCode(event.target.value.replace(/\D/g, "").slice(0, 6))
+                      }
+                      placeholder="000000"
+                      className={cn(eaNameInputClass, "mt-3 max-w-[12rem] tracking-[0.35em]")}
+                      autoFocus
+                    />
+                    {phoneError ? (
+                      <p className="mt-3 text-sm text-[#dc2626]" role="alert">
+                        {phoneError}
+                      </p>
+                    ) : null}
+                    <div className="mt-6 flex justify-end gap-3">
+                      <button
+                        type="button"
+                        onClick={() => setPhoneStep("form")}
+                        disabled={verifyingPhoneCode}
+                        className="rounded-full border border-[#c5c9d0] bg-white px-6 py-2 text-sm font-medium text-[#1d2033] transition hover:bg-[#f9fafb] disabled:opacity-50"
+                      >
+                        Cancelar
+                      </button>
+                      <button
+                        type="button"
+                        onClick={() => void handleVerifyPhoneCode()}
+                        disabled={verifyingPhoneCode}
+                        className="rounded-full bg-[#1d2033] px-6 py-2 text-sm font-medium text-white transition hover:bg-[#2d3148] disabled:opacity-50"
+                      >
+                        {verifyingPhoneCode ? "Verificando…" : "Verificar"}
+                      </button>
+                    </div>
+                  </div>
+                ) : (
+                  <>
+                    <div className="flex flex-wrap items-start justify-between gap-4">
+                      <div className="min-w-0 flex-1">
+                        <p className="text-sm font-semibold text-[#1d2033]">Número de teléfono</p>
+                        <p className="mt-1 text-sm text-[#4b5563]">
+                          {account.phoneMasked ? (
+                            <span className="flex flex-wrap items-center gap-2">
+                              {account.phoneMasked}
+                              {account.phoneVerified ? (
+                                <span className="inline-flex items-center gap-1 rounded-full bg-[#e8f5e9] px-2 py-0.5 text-xs font-medium text-[#1a9e32]">
+                                  <IconCheckVerified />
+                                  Verificado
+                                </span>
+                              ) : null}
+                            </span>
+                          ) : (
+                            <span className="text-[#6b7280]">
+                              No se ha añadido ningún número de teléfono.
+                            </span>
+                          )}
+                        </p>
+                      </div>
+                      {account.phoneMasked ? (
+                        <EaActionLink onClick={handleStartAddPhone}>Editar</EaActionLink>
+                      ) : (
+                        <EaActionLink onClick={handleStartAddPhone}>+ Añadir</EaActionLink>
+                      )}
+                    </div>
+                    {!account.phoneMasked ? (
+                      <p className="mt-3 flex items-start gap-2 text-xs leading-relaxed text-[#6b7280]">
+                        <IconInfo />
+                        <span>
+                          Un número de teléfono mejora y protege tu cuenta con EA.
+                        </span>
+                      </p>
+                    ) : null}
+                  </>
+                )}
+              </div>
 
               <AccountFieldRow label="Ajustes regionales">
                 <div className="flex flex-wrap items-start justify-between gap-2">

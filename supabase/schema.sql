@@ -22,6 +22,9 @@ CREATE TABLE public.profiles (
   last_name     TEXT,
   birth_date    DATE,
   country_code  TEXT,
+  phone_dial_code TEXT,
+  phone_number    TEXT,
+  phone_verified  BOOLEAN NOT NULL DEFAULT false,
   avatar_url    TEXT,
   created_at    TIMESTAMPTZ NOT NULL DEFAULT NOW(),
   updated_at    TIMESTAMPTZ NOT NULL DEFAULT NOW()

@@ -2,21 +2,14 @@ import type { ReactNode } from "react";
 
 export function EaCircleLogo({ className }: { className?: string }) {
   return (
-    <svg viewBox="0 0 32 32" className={className} aria-hidden>
-      <circle cx="16" cy="16" r="16" fill="#fff" />
-      <circle cx="16" cy="16" r="14" fill="#000" />
-      <text
-        x="16"
-        y="20"
-        textAnchor="middle"
-        fill="#fff"
-        fontSize="11"
-        fontWeight="700"
-        fontFamily="system-ui, sans-serif"
-      >
-        EA
-      </text>
-    </svg>
+    <img
+      src="/images/auth/ea-logo.svg"
+      alt=""
+      width={32}
+      height={32}
+      className={className ?? "h-8 w-8 shrink-0"}
+      aria-hidden
+    />
   );
 }
 

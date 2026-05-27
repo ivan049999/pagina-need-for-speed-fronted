@@ -196,7 +196,7 @@ export function ProfileAccountDropdown() {
             <div className="min-w-0">
               <p className="truncate text-sm font-semibold text-white">{pilotName}</p>
               <Link
-                href="#"
+                href="/informacion-cuenta"
                 role="menuitem"
                 onClick={() => setOpen(false)}
                 className="text-xs text-[#b8bcc6] transition-colors hover:text-white"

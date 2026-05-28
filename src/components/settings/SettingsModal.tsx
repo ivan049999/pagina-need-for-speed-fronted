@@ -17,9 +17,9 @@ type SettingsModalProps = {
 
 const TABS: { id: SettingsTab; label: string; icon: string }[] = [
   { id: "general", label: "General", icon: "⚙" },
+  { id: "idioma", label: "Idioma", icon: "🌐" },
   { id: "pantalla", label: "Pantalla", icon: "◐" },
   { id: "audio", label: "Audio", icon: "♪" },
-  { id: "privacidad", label: "Privacidad", icon: "◈" },
 ];
 
 function Toggle({
@@ -206,15 +206,6 @@ function TabPanel({
         <p className="mb-4 text-xs uppercase tracking-[0.2em] text-nfs-neon/90">
           Preferencias del juego
         </p>
-        <SelectRow
-          label="Idioma de la interfaz"
-          value={draft.language}
-          options={[
-            { value: "es", label: "Español" },
-            { value: "en", label: "English" },
-          ]}
-          onChange={(v) => onPatch({ language: v as "es" | "en" })}
-        />
         <Toggle
           label="Efectos de neón"
           description="Animaciones de brillo en títulos y elementos destacados."
@@ -231,6 +222,26 @@ function TabPanel({
           description="Desactiva parpadeos y transiciones intensas."
           checked={draft.reducedMotion}
           onChange={(reducedMotion) => onPatch({ reducedMotion })}
+        />
+      </div>
+    );
+  }
+
+  if (activeTab === "idioma") {
+    return (
+      <div className="space-y-3">
+        <p className="mb-4 text-xs uppercase tracking-[0.2em] text-nfs-neon/90">
+          Idioma
+        </p>
+
+        <SelectRow
+          label="Idioma de la interfaz"
+          value={draft.language}
+          options={[
+            { value: "es", label: "Español" },
+            { value: "en", label: "Inglés" },
+          ]}
+          onChange={(v) => onPatch({ language: v as "es" | "en" })}
         />
       </div>
     );
@@ -290,23 +301,7 @@ function TabPanel({
     );
   }
 
-  return (
-    <div className="space-y-3">
-      <p className="mb-4 text-xs uppercase tracking-[0.2em] text-nfs-neon/90">
-        Privacidad y datos
-      </p>
-      <Toggle
-        label="Cookies de análisis"
-        description="Ayuda a mejorar la experiencia con estadísticas anónimas."
-        checked={draft.analyticsCookies}
-        onChange={(analyticsCookies) => onPatch({ analyticsCookies })}
-      />
-      <p className="rounded-sm border border-white/5 bg-black/30 px-4 py-3 text-xs leading-relaxed text-nfs-chrome/70">
-        Esta es una página de demostración. Los ajustes se guardan localmente en tu
-        navegador.
-      </p>
-    </div>
-  );
+  return null;
 }
 
 export function SettingsModal({ open, onClose }: SettingsModalProps) {

@@ -1,4 +1,4 @@
-export type SettingsTab = "general" | "pantalla" | "audio" | "privacidad";
+export type SettingsTab = "general" | "idioma" | "pantalla" | "audio";
 
 export type AppSettings = {
   language: "es" | "en";
@@ -10,7 +10,6 @@ export type AppSettings = {
   sfxVolume: number;
   musicVolume: number;
   reducedMotion: boolean;
-  analyticsCookies: boolean;
 };
 
 export const DEFAULT_SETTINGS: AppSettings = {
@@ -23,7 +22,6 @@ export const DEFAULT_SETTINGS: AppSettings = {
   sfxVolume: 80,
   musicVolume: 65,
   reducedMotion: false,
-  analyticsCookies: false,
 };
 
 export const SETTINGS_STORAGE_KEY = "nfs-web-settings";

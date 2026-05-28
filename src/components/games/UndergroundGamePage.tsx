@@ -27,6 +27,7 @@ export function UndergroundGamePage({ game }: Props) {
               price={game.price}
               priceNote={game.priceNote}
               ctaLabel={game.ctaLabel}
+              storePlatforms={game.storePlatforms}
               legalNote={game.legalNote}
               rating={game.rating}
             />

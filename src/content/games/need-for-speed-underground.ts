@@ -9,6 +9,13 @@ export type GameSpecRow = {
   value: string;
 };
 
+export type StorePlatform = {
+  id: "ea" | "xbox" | "steam" | "playstation";
+  label: string;
+  href: string;
+  iconSrc?: string;
+};
+
 export type GamePageContent = {
   slug: string;
   title: string;
@@ -17,6 +24,7 @@ export type GamePageContent = {
   price: string;
   priceNote: string;
   ctaLabel: string;
+  storePlatforms: StorePlatform[];
   legalNote: string;
   rating: { label: string; descriptor: string };
   heroVideoSrc: string;
@@ -46,6 +54,30 @@ export const NEED_FOR_SPEED_UNDERGROUND: GamePageContent = {
   price: "$9.99",
   priceNote: "Pueden aplicarse impuestos aplicables en la compra.",
   ctaLabel: "Descargar ahora",
+  storePlatforms: [
+    {
+      id: "ea",
+      label: "Comprar en CeX España",
+      href: "https://es.webuy.com/product-detail/?id=5030934036184",
+      iconSrc:
+        "/images/juegos-need-for-speed/Need-For-Speed-Underground/CeX_Logo.webp",
+    },
+    {
+      id: "xbox",
+      label: "Continuar a la Tienda de Xbox",
+      href: "https://www.xbox.com/es-ES/games/store",
+    },
+    {
+      id: "steam",
+      label: "Continuar a la Tienda de Steam",
+      href: "https://store.steampowered.com/search/?term=Need+for+Speed+Underground",
+    },
+    {
+      id: "playstation",
+      label: "Continuar a la Tienda de PlayStation®",
+      href: "https://store.playstation.com/es-es/search/need-for-speed-underground",
+    },
+  ],
   legalNote:
     "Need for Speed es una marca registrada de Electronic Arts Inc. Las marcas de terceros son propiedad de sus respectivos titulares.",
   rating: {

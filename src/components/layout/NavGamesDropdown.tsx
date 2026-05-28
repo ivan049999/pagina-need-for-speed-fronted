@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
 import { NFS_GAMES } from "@/config/nfs-games";
+import { isInternalNfsGameHref } from "@/lib/nfs-game-link";
 
 function ChevronIcon({ open }: { open: boolean }) {
   return (
@@ -73,19 +74,23 @@ export function NavGamesDropdown() {
           role="menu"
           className="absolute left-0 top-full z-[60] max-h-[70vh] min-w-[20rem] overflow-y-auto border border-[#3d8bfd]/70 bg-[#0f1a2e] py-1 shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
         >
-          {NFS_GAMES.map((game) => (
-            <Link
-              key={game.label}
-              href={game.href}
-              role="menuitem"
-              target="_blank"
-              rel="noopener noreferrer"
-              className="block px-5 py-2.5 text-sm text-white transition-colors hover:bg-white/5"
-              onClick={() => setOpen(false)}
-            >
-              {game.label}
-            </Link>
-          ))}
+          {NFS_GAMES.map((game) => {
+            const internal = isInternalNfsGameHref(game.href);
+            return (
+              <Link
+                key={game.label}
+                href={game.href}
+                role="menuitem"
+                {...(internal
+                  ? {}
+                  : { target: "_blank", rel: "noopener noreferrer" })}
+                className="block px-5 py-2.5 text-sm text-white transition-colors hover:bg-white/5"
+                onClick={() => setOpen(false)}
+              >
+                {game.label}
+              </Link>
+            );
+          })}
         </div>
       )}
     </div>

@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import { NAV_LINKS } from "@/config/navigation";
 import { NFS_GAMES } from "@/config/nfs-games";
+import { isInternalNfsGameHref } from "@/lib/nfs-game-link";
 
 export function MobileNav() {
   const [open, setOpen] = useState(false);
@@ -32,21 +33,25 @@ export function MobileNav() {
           </button>
           {gamesOpen && (
             <div className="mb-2 max-h-[50vh] overflow-y-auto border border-[#3d8bfd]/70 bg-[#0f1a2e] py-1">
-              {NFS_GAMES.map((game) => (
-                <Link
-                  key={game.label}
-                  href={game.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="block px-4 py-2 text-sm text-white hover:bg-white/5"
-                  onClick={() => {
-                    setOpen(false);
-                    setGamesOpen(false);
-                  }}
-                >
-                  {game.label}
-                </Link>
-              ))}
+              {NFS_GAMES.map((game) => {
+                const internal = isInternalNfsGameHref(game.href);
+                return (
+                  <Link
+                    key={game.label}
+                    href={game.href}
+                    {...(internal
+                      ? {}
+                      : { target: "_blank", rel: "noopener noreferrer" })}
+                    className="block px-4 py-2 text-sm text-white hover:bg-white/5"
+                    onClick={() => {
+                      setOpen(false);
+                      setGamesOpen(false);
+                    }}
+                  >
+                    {game.label}
+                  </Link>
+                );
+              })}
             </div>
           )}
           {NAV_LINKS.map((link) => (

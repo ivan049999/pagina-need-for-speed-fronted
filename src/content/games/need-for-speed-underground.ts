@@ -19,6 +19,7 @@ export type GamePageContent = {
   ctaLabel: string;
   legalNote: string;
   rating: { label: string; descriptor: string };
+  heroVideoSrc: string;
   media: GameMediaItem[];
   coverImage: GameMediaItem;
   about: {
@@ -51,41 +52,43 @@ export const NEED_FOR_SPEED_UNDERGROUND: GamePageContent = {
     label: "TEEN",
     descriptor: "Violencia, lenguaje moderado",
   },
+  heroVideoSrc:
+    "/videos/Juegos-Need-For-Speed/Need-For-Speed-Underground/nfsuVideo1.mp4",
   coverImage: {
     id: "cover",
-    src: "https://upload.wikimedia.org/wikipedia/en/1/12/Need_for_Speed_Underground_cover.jpg",
+    src: "/images/juegos-need-for-speed/Need-For-Speed-Underground/portada-need-for-speed-unserground.webp",
     alt: "Carátula de Need for Speed Underground",
   },
   media: [
     {
       id: "hero-1",
-      src: "https://images.unsplash.com/photo-1544636331-e26879cd4d9b?w=1200&q=80",
-      alt: "Coches de carreras nocturnos en la ciudad",
+      src: "/images/juegos-need-for-speed/Need-For-Speed-Underground/portada-need-for-speed-unserground.webp",
+      alt: "Portada de Need for Speed Underground",
     },
     {
       id: "hero-2",
-      src: "https://images.unsplash.com/photo-1503376780353-7e6692767b70?w=1200&q=80",
-      alt: "Deportivo en calle urbana de noche",
+      src: "/images/juegos-need-for-speed/Need-For-Speed-Underground/nfsu-imagen1.jpg",
+      alt: "Need for Speed Underground — captura 1",
     },
     {
       id: "hero-3",
-      src: "https://images.unsplash.com/photo-1494976388531-d1058498ceb8?w=1200&q=80",
-      alt: "Coche deportivo en carretera",
+      src: "/images/juegos-need-for-speed/Need-For-Speed-Underground/nfsu-imagen2.jpg",
+      alt: "Need for Speed Underground — captura 2",
     },
     {
       id: "hero-4",
-      src: "https://images.unsplash.com/photo-1583121274602-3e2820abc89e?w=1200&q=80",
-      alt: "Detalle de vehículo de competición",
+      src: "/images/juegos-need-for-speed/Need-For-Speed-Underground/nfsu-imagen3.jpg",
+      alt: "Need for Speed Underground — captura 3",
     },
     {
       id: "hero-5",
-      src: "https://images.unsplash.com/photo-1552519507-da3b142c6e3d?w=1200&q=80",
-      alt: "Coche clásico deportivo",
+      src: "/images/juegos-need-for-speed/Need-For-Speed-Underground/nfsu-imagen4.jpg",
+      alt: "Need for Speed Underground — captura 4",
     },
     {
       id: "hero-6",
-      src: "https://images.unsplash.com/photo-1618843479313-40f8afb4b4d8?w=1200&q=80",
-      alt: "Superdeportivo en entorno urbano",
+      src: "/images/juegos-need-for-speed/Need-For-Speed-Underground/nfsu-imagen5.webp",
+      alt: "Need for Speed Underground — captura 5",
     },
   ],
   about: {

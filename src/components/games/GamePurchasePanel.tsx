@@ -1,4 +1,5 @@
 import Image from "next/image";
+import Link from "next/link";
 import type { GamePageContent } from "@/content/games/need-for-speed-underground";
 
 type Props = Pick<
@@ -12,8 +13,6 @@ type Props = Pick<
   | "legalNote"
   | "rating"
 >;
-
-const PLATFORM_LABELS = ["EA app", "Steam", "Epic", "PlayStation", "Xbox", "PC"];
 
 export function GamePurchasePanel({
   coverImage,
@@ -38,31 +37,31 @@ export function GamePurchasePanel({
       </div>
 
       <div className="mb-4 flex flex-wrap gap-2">
-        {tags.map((tag) => (
-          <span
-            key={tag}
-            className={
-              tag === "Juego básico"
-                ? "rounded-full bg-[#0768f8] px-3 py-1 text-xs font-medium text-white"
-                : "rounded-full border border-white/30 px-3 py-1 text-xs text-white/90"
-            }
-          >
-            {tag}
-          </span>
-        ))}
+        {tags.map((tag) =>
+          tag === "Carreras" ? (
+            <Link
+              key={tag}
+              href="https://www.ea.com/es-es/games/library/racing"
+              target="_blank"
+              rel="noopener noreferrer"
+              className="rounded-full border border-white/30 px-3 py-1 text-xs text-white/90 transition-colors hover:bg-white/10 hover:text-white"
+            >
+              {tag}
+            </Link>
+          ) : (
+            <span
+              key={tag}
+              className={
+                tag === "Juego básico"
+                  ? "rounded-full bg-[#0768f8] px-3 py-1 text-xs font-medium text-white"
+                  : "rounded-full border border-white/30 px-3 py-1 text-xs text-white/90"
+              }
+            >
+              {tag}
+            </span>
+          )
+        )}
       </div>
-
-      <p className="mb-2 text-sm text-white/70">Disponible en</p>
-      <ul className="mb-5 flex flex-wrap gap-2 text-xs text-white/80">
-        {PLATFORM_LABELS.map((platform) => (
-          <li
-            key={platform}
-            className="rounded border border-white/15 px-2 py-1"
-          >
-            {platform}
-          </li>
-        ))}
-      </ul>
 
       <p className="text-sm text-white/70">{priceLabel}</p>
       <p className="mb-1 text-3xl font-semibold text-white">{price}</p>

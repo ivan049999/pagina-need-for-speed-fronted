@@ -48,13 +48,13 @@ export const NEED_FOR_SPEED_UNDERGROUND_2: GamePageContent = {
     "/videos/Juegos-Need-For-Speed/Need-For-Speed-Underground/nfsuVideo1.mp4",
   coverImage: {
     id: "cover",
-    src: `${ASSET_BASE}/portada-need-for-speed-unserground.webp`,
+    src: `${ASSET_BASE}/portada-need-for-speed-unserground-2.jpg`,
     alt: "Carátula de Need for Speed Underground 2",
   },
   media: [
     {
       id: "hero-1",
-      src: `${ASSET_BASE}/portada-need-for-speed-unserground.webp`,
+      src: `${ASSET_BASE}/portada-need-for-speed-unserground-2.jpg`,
       alt: "Portada de Need for Speed Underground 2",
     },
     {

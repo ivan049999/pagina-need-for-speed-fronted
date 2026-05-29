@@ -46,7 +46,7 @@ export const NEED_FOR_SPEED_MOST_WANTED_2005: GamePageContent = {
     ],
   },
   heroVideoSrc:
-    "/videos/Juegos-Need-For-Speed/Need-For-Speed-Most-Wanted-2005/nfsmw-video1.webm",
+    "/videos/Juegos-Need-For-Speed/Need-For-Speed-Most-Wanted-2005/nfsmw-video1.mp4",
   coverImage: {
     id: "cover",
     src: `${ASSET_BASE}/portada-most-wanted-2005.jpg`,
@@ -55,7 +55,7 @@ export const NEED_FOR_SPEED_MOST_WANTED_2005: GamePageContent = {
   media: [
     {
       id: "hero-1",
-      src: `${ASSET_BASE}/portada-most-wanted-2005.jpg`,
+      src: `${ASSET_BASE}/nfsmw-imagen0.jpg`,
       alt: "Portada de Need for Speed Most Wanted (2005)",
     },
     {

@@ -15,19 +15,19 @@ export const NEED_FOR_SPEED_MOST_WANTED_2005: GamePageContent = {
     {
       id: "ea",
       label: "Comprar en CeX España",
-      href: "https://es.webuy.com/search?q=Need+for+Speed+Most+Wanted+2005",
+      href: "https://es.webuy.com/product-detail/?id=5030934046091",
       iconSrc: `${ASSET_BASE}/CeX_Logo.webp`,
     },
     {
       id: "xbox",
       label: "Comprar en Amazon España",
-      href: "https://www.amazon.es/s?k=Need+for+Speed+Most+Wanted+2005&rh=n%3A599382031",
+      href: "https://www.amazon.es/Need-Speed-Most-Wanted-Espa%C3%B1a/dp/B005DWH9KO/",
       iconSrc: `${ASSET_BASE}/logoAmazon.png`,
     },
     {
       id: "steam",
       label: "Comprar en Ebay",
-      href: "https://www.ebay.com/sch/i.html?_nkw=Need+for+Speed+Most+Wanted+2005",
+      href: "https://www.ebay.com/sch/i.html?_nkw=need+for+speed+most+wanted+&_sacat=0&_from=R40&_trksid=p2334524.m570.l1313&_odkw=need+for+speed+most+wanted+ps2&_osacat=0",
       iconSrc: `${ASSET_BASE}/logoEbay.png`,
     },
   ],

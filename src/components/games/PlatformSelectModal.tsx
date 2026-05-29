@@ -54,30 +54,10 @@ function SteamIcon() {
   );
 }
 
-function PlayStationIcon() {
-  return (
-    <svg viewBox="0 0 24 24" className="h-7 w-7 shrink-0" aria-hidden>
-      <circle cx="12" cy="12" r="12" fill="white" />
-      <text
-        x="12"
-        y="15.5"
-        textAnchor="middle"
-        fill="#0768f8"
-        fontSize="11"
-        fontWeight="bold"
-        fontFamily="Arial, sans-serif"
-      >
-        PS
-      </text>
-    </svg>
-  );
-}
-
 const PLATFORM_ICONS: Record<StorePlatform["id"], () => ReactElement> = {
   ea: EaAppIcon,
   xbox: XboxIcon,
   steam: SteamIcon,
-  playstation: PlayStationIcon,
 };
 
 export function PlatformSelectModal({

@@ -10,7 +10,7 @@ export type GameSpecRow = {
 };
 
 export type StorePlatform = {
-  id: "ea" | "xbox" | "steam" | "playstation";
+  id: "ea" | "xbox" | "steam";
   label: string;
   href: string;
   iconSrc?: string;
@@ -64,18 +64,17 @@ export const NEED_FOR_SPEED_UNDERGROUND: GamePageContent = {
     },
     {
       id: "xbox",
-      label: "Continuar a la Tienda de Xbox",
-      href: "https://www.xbox.com/es-ES/games/store",
+      label: "Comprar en Amazon España",
+      href: "https://www.amazon.es/Need-for-Speed-Underground-Videojuegos/s?k=Need+for+Speed+Underground&rh=n%3A599382031",
+      iconSrc:
+        "/images/juegos-need-for-speed/Need-For-Speed-Underground/logoAmazon.png",
     },
     {
       id: "steam",
-      label: "Continuar a la Tienda de Steam",
-      href: "https://store.steampowered.com/search/?term=Need+for+Speed+Underground",
-    },
-    {
-      id: "playstation",
-      label: "Continuar a la Tienda de PlayStation®",
-      href: "https://store.playstation.com/es-es/search/need-for-speed-underground",
+      label: "Comprar en Ebay",
+      href: "https://www.ebay.com/b/Need-for-Speed-Underground-EA-Video-Games/139973/bn_101708850",
+      iconSrc:
+        "/images/juegos-need-for-speed/Need-For-Speed-Underground/logoEbay.png",
     },
   ],
   legalNote:

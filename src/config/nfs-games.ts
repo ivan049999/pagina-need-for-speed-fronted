@@ -71,7 +71,7 @@ export const NFS_GAMES: NfsGame[] = [
   },
   {
     label: "Need for Speed™ Most Wanted (2005)",
-    href: "https://es.wikipedia.org/wiki/Need_for_Speed:_Most_Wanted_(2005)",
+    href: "/need-for-speed-most-wanted-2005",
   },
   {
     label: "Need for Speed™ Underground 2",

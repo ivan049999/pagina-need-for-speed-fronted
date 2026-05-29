@@ -3,6 +3,7 @@
 import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
+import { PegiRatingBadges } from "@/components/games/PegiRatingBadges";
 import { PlatformSelectModal } from "@/components/games/PlatformSelectModal";
 import type { GamePageContent } from "@/content/games/need-for-speed-underground";
 
@@ -79,7 +80,7 @@ export function GamePurchasePanel({
         <button
           type="button"
           onClick={() => setPlatformModalOpen(true)}
-          className="flex w-full items-center justify-center gap-2 rounded bg-[#0768f8] py-3 text-sm font-bold uppercase tracking-wide text-white transition-colors hover:bg-[#1a75ff]"
+          className="flex w-full items-center justify-center gap-2 rounded bg-[#0768f8] py-3 text-sm font-bold tracking-wide text-white transition-colors hover:bg-[#1a75ff]"
         >
           {ctaLabel}
           <span aria-hidden>▾</span>
@@ -87,15 +88,7 @@ export function GamePurchasePanel({
 
         <p className="mt-5 text-[10px] leading-relaxed text-white/45">{legalNote}</p>
 
-        <div className="mt-4 flex items-start gap-3 border-t border-white/10 pt-4">
-          <div
-            className="flex h-14 w-14 shrink-0 items-center justify-center rounded bg-white text-xs font-bold text-black"
-            aria-hidden
-          >
-            {rating.label}
-          </div>
-          <p className="text-xs text-white/60">{rating.descriptor}</p>
-        </div>
+        <PegiRatingBadges rating={rating} />
       </aside>
 
       <PlatformSelectModal

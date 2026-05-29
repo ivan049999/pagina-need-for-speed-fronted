@@ -16,6 +16,27 @@ export type StorePlatform = {
   iconSrc?: string;
 };
 
+export type PegiDescriptorId = "violence" | "bad-language" | "fear";
+
+export type PegiDescriptor = {
+  id: PegiDescriptorId;
+  label: string;
+  iconSrc?: string;
+};
+
+export type GameRating =
+  | {
+      system: "pegi";
+      age: number;
+      ageBadgeSrc?: string;
+      descriptors?: PegiDescriptor[];
+    }
+  | {
+      system: "esrb";
+      label: string;
+      descriptor: string;
+    };
+
 export type GamePageContent = {
   slug: string;
   title: string;
@@ -26,7 +47,7 @@ export type GamePageContent = {
   ctaLabel: string;
   storePlatforms: StorePlatform[];
   legalNote: string;
-  rating: { label: string; descriptor: string };
+  rating: GameRating;
   heroVideoSrc: string;
   media: GameMediaItem[];
   coverImage: GameMediaItem;
@@ -53,7 +74,7 @@ export const NEED_FOR_SPEED_UNDERGROUND: GamePageContent = {
   priceLabel: "En EA app desde",
   price: "$9.99",
   priceNote: "Pueden aplicarse impuestos aplicables en la compra.",
-  ctaLabel: "Descargar ahora",
+  ctaLabel: "Seleccionar Plataforma",
   storePlatforms: [
     {
       id: "ea",
@@ -80,8 +101,18 @@ export const NEED_FOR_SPEED_UNDERGROUND: GamePageContent = {
   legalNote:
     "Need for Speed es una marca registrada de Electronic Arts Inc. Las marcas de terceros son propiedad de sus respectivos titulares.",
   rating: {
-    label: "TEEN",
-    descriptor: "Violencia, lenguaje moderado",
+    system: "pegi",
+    age: 3,
+    ageBadgeSrc:
+      "/images/juegos-need-for-speed/Need-For-Speed-Underground/Pegi-3-Icono.png",
+    descriptors: [
+      {
+        id: "violence",
+        label: "Violence",
+        iconSrc:
+          "/images/juegos-need-for-speed/Need-For-Speed-Underground/violence-Icono.png",
+      },
+    ],
   },
   heroVideoSrc:
     "/videos/Juegos-Need-For-Speed/Need-For-Speed-Underground/nfsuVideo1.mp4",

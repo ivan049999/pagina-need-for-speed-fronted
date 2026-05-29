@@ -14,19 +14,19 @@ export const NEED_FOR_SPEED_CARBON: GamePageContent = {
     {
       id: "ea",
       label: "Comprar en CeX España",
-      href: "https://es.webuy.com/search?q=Need+for+Speed+Carbon",
+      href: "https://es.webuy.com/product-detail/?id=5030930052348",
       iconSrc: `${ASSET_BASE}/CeX_Logo.webp`,
     },
     {
       id: "xbox",
       label: "Comprar en Amazon España",
-      href: "https://www.amazon.es/s?k=Need+for+Speed+Carbon&rh=n%3A599382031",
+      href: "https://www.amazon.es/s?k=need+for+speed+carbon&__mk_es_ES=%C3%85M%C3%85%C5%BD%C3%95%C3%91&crid=9M7GG87XQAFC&sprefix=need+for+speed+carbon%2Caps%2C103&ref=nb_sb_noss_1",
       iconSrc: `${ASSET_BASE}/logoAmazon.png`,
     },
     {
       id: "steam",
       label: "Comprar en Ebay",
-      href: "https://www.ebay.com/sch/i.html?_nkw=Need+for+Speed+Carbon",
+      href: "https://www.ebay.com/sch/i.html?_nkw=need+for+speed+carbon&_sacat=0&_from=R40&_trksid=p4439441.m570.l1313",
       iconSrc: `${ASSET_BASE}/logoEbay.png`,
     },
   ],
@@ -45,7 +45,7 @@ export const NEED_FOR_SPEED_CARBON: GamePageContent = {
     ],
   },
   heroVideoSrc:
-    "/videos/Juegos-Need-For-Speed/Need-For-Speed-Carbon/nfsc-video1.mp4",
+    "/videos/Juegos-Need-For-Speed/Need-For-Speed-Carbon/nfsc-video1.webm",
   coverImage: {
     id: "cover",
     src: `${ASSET_BASE}/portada-carbon.jpg`,

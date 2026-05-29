@@ -14,19 +14,19 @@ export const NEED_FOR_SPEED_UNDERGROUND_2: GamePageContent = {
     {
       id: "ea",
       label: "Comprar en CeX España",
-      href: "https://es.webuy.com/search?q=Need+for+Speed+Underground+2",
+      href: "https://es.webuy.com/product-detail/?id=5030934039628",
       iconSrc: `${ASSET_BASE}/CeX_Logo.webp`,
     },
     {
       id: "xbox",
       label: "Comprar en Amazon España",
-      href: "https://www.amazon.es/s?k=Need+for+Speed+Underground+2&rh=n%3A599382031",
+      href: "https://www.amazon.es/Need-Speed-Underground-Importaci%C3%B3n-Alemana/dp/B0002X7ILY/",
       iconSrc: `${ASSET_BASE}/logoAmazon.png`,
     },
     {
       id: "steam",
       label: "Comprar en Ebay",
-      href: "https://www.ebay.com/sch/i.html?_nkw=Need+for+Speed+Underground+2",
+      href: "https://www.ebay.com/sch/i.html?_nkw=need+for+speed+unserground+2&_sacat=0&_from=R40&_trksid=p4439441.m570.l1313",
       iconSrc: `${ASSET_BASE}/logoEbay.png`,
     },
   ],
@@ -45,7 +45,7 @@ export const NEED_FOR_SPEED_UNDERGROUND_2: GamePageContent = {
     ],
   },
   heroVideoSrc:
-    "/videos/Juegos-Need-For-Speed/Need-For-Speed-Underground/nfsuVideo1.mp4",
+    "/videos/Juegos-Need-For-Speed/Need-For-Speed-Underground-2/nfsu2-video1.webm",
   coverImage: {
     id: "cover",
     src: `${ASSET_BASE}/portada-need-for-speed-unserground-2.jpg`,
@@ -59,27 +59,27 @@ export const NEED_FOR_SPEED_UNDERGROUND_2: GamePageContent = {
     },
     {
       id: "hero-2",
-      src: `${ASSET_BASE}/nfsu-imagen1.jpg`,
+      src: `${ASSET_BASE}/nfsu2-imagen1.jpg`,
       alt: "Need for Speed Underground 2 — captura 1",
     },
     {
       id: "hero-3",
-      src: `${ASSET_BASE}/nfsu-imagen2.jpg`,
+      src: `${ASSET_BASE}/nfsu2-imagen2.jpg`,
       alt: "Need for Speed Underground 2 — captura 2",
     },
     {
       id: "hero-4",
-      src: `${ASSET_BASE}/nfsu-imagen3.jpg`,
+      src: `${ASSET_BASE}/nfsu2-imagen3.jpg`,
       alt: "Need for Speed Underground 2 — captura 3",
     },
     {
       id: "hero-5",
-      src: `${ASSET_BASE}/nfsu-imagen4.jpg`,
+      src: `${ASSET_BASE}/nfsu2-imagen4.webp`,
       alt: "Need for Speed Underground 2 — captura 4",
     },
     {
       id: "hero-6",
-      src: `${ASSET_BASE}/nfsu-imagen5.webp`,
+      src: `${ASSET_BASE}/nfsu2-imagen5.jpg`,
       alt: "Need for Speed Underground 2 — captura 5",
     },
   ],

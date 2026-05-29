@@ -75,7 +75,7 @@ export const NFS_GAMES: NfsGame[] = [
   },
   {
     label: "Need for Speed™ Underground 2",
-    href: "https://es.wikipedia.org/wiki/Need_for_Speed:_Underground_2",
+    href: "/need-for-speed-underground-2",
   },
   {
     label: "Need for Speed™ Underground",

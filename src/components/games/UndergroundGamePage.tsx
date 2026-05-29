@@ -2,7 +2,7 @@ import { GameAboutSection } from "@/components/games/GameAboutSection";
 import { GameMediaHero } from "@/components/games/GameMediaHero";
 import { GamePurchasePanel } from "@/components/games/GamePurchasePanel";
 import { GameSystemRequirements } from "@/components/games/GameSystemRequirements";
-import type { GamePageContent } from "@/content/games/need-for-speed-underground";
+import type { GamePageContent } from "@/content/games/game-page-content";
 
 type Props = {
   game: GamePageContent;

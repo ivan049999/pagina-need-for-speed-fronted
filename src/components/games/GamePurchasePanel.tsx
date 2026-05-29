@@ -6,7 +6,7 @@ import { useState } from "react";
 import { PegiRatingBadges } from "@/components/games/PegiRatingBadges";
 import { useGameLivePrice } from "@/hooks/useGameLivePrice";
 import { PlatformSelectModal } from "@/components/games/PlatformSelectModal";
-import type { GamePageContent } from "@/content/games/need-for-speed-underground";
+import type { GamePageContent } from "@/content/games/game-page-content";
 
 type Props = Pick<
   GamePageContent,

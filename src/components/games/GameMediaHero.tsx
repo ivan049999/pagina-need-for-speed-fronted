@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import { useEffect, useRef, useState } from "react";
-import type { GameMediaItem } from "@/content/games/need-for-speed-underground";
+import type { GameMediaItem } from "@/content/games/game-page-content";
 import { cn } from "@/lib/utils/cn";
 
 type Props = {

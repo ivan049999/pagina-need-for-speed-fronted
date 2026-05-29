@@ -3,7 +3,7 @@ import type { ReactElement } from "react";
 import type {
   GameRating,
   PegiDescriptor,
-} from "@/content/games/need-for-speed-underground";
+} from "@/content/games/game-page-content";
 
 const PEGI_BADGE_WIDTH = 50;
 const PEGI_BADGE_HEIGHT = 58;

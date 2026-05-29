@@ -1,4 +1,4 @@
-import type { GamePageContent } from "@/content/games/need-for-speed-underground";
+import type { GamePageContent } from "@/content/games/game-page-content";
 
 type Props = {
   about: GamePageContent["about"];

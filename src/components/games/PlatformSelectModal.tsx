@@ -3,7 +3,7 @@
 import Image from "next/image";
 import { useEffect, useRef, type ReactElement } from "react";
 import { createPortal } from "react-dom";
-import type { StorePlatform } from "@/content/games/need-for-speed-underground";
+import type { StorePlatform } from "@/content/games/game-page-content";
 
 type PlatformSelectModalProps = {
   open: boolean;

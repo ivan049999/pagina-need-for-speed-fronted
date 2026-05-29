@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { GamePageContent } from "@/content/games/need-for-speed-underground";
+import type { GamePageContent } from "@/content/games/game-page-content";
 
 type Props = {
   requirements: GamePageContent["systemRequirements"];

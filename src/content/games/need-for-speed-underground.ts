@@ -71,8 +71,8 @@ export const NEED_FOR_SPEED_UNDERGROUND: GamePageContent = {
   slug: "need-for-speed-underground",
   title: "Need for Speed™ Underground",
   tags: ["Juego básico", "Carreras"],
-  priceLabel: "En EA app desde",
-  price: "$9.99",
+  priceLabel: "Desde",
+  price: "9,99 €",
   priceNote: "Pueden aplicarse impuestos aplicables en la compra.",
   ctaLabel: "Seleccionar Plataforma",
   storePlatforms: [

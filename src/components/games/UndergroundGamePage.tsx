@@ -21,6 +21,7 @@ export function UndergroundGamePage({ game }: Props) {
 
           <div className="mt-8 lg:mt-0">
             <GamePurchasePanel
+              slug={game.slug}
               coverImage={game.coverImage}
               tags={game.tags}
               priceLabel={game.priceLabel}

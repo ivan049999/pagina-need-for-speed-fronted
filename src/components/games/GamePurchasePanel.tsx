@@ -4,6 +4,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { useState } from "react";
 import { PegiRatingBadges } from "@/components/games/PegiRatingBadges";
+import { useGameLivePrice } from "@/hooks/useGameLivePrice";
 import { PlatformSelectModal } from "@/components/games/PlatformSelectModal";
 import type { GamePageContent } from "@/content/games/need-for-speed-underground";
 
@@ -18,6 +19,7 @@ type Props = Pick<
   | "storePlatforms"
   | "legalNote"
   | "rating"
+  | "slug"
 >;
 
 export function GamePurchasePanel({
@@ -30,8 +32,14 @@ export function GamePurchasePanel({
   storePlatforms,
   legalNote,
   rating,
+  slug,
 }: Props) {
   const [platformModalOpen, setPlatformModalOpen] = useState(false);
+  const { price: livePrice, priceLabel: livePriceLabel } = useGameLivePrice({
+    slug,
+    fallbackPrice: price,
+    fallbackPriceLabel: priceLabel,
+  });
 
   return (
     <>
@@ -73,8 +81,8 @@ export function GamePurchasePanel({
           )}
         </div>
 
-        <p className="text-sm text-white/70">{priceLabel}</p>
-        <p className="mb-1 text-3xl font-semibold text-white">{price}</p>
+        <p className="text-sm text-white/70">{livePriceLabel}</p>
+        <p className="mb-1 text-3xl font-semibold text-white">{livePrice}</p>
         <p className="mb-5 text-xs text-white/50">{priceNote}</p>
 
         <button

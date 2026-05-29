@@ -67,7 +67,7 @@ export const NFS_GAMES: NfsGame[] = [
   },
   {
     label: "Need for Speed™ Carbon",
-    href: "https://es.wikipedia.org/wiki/Need_for_Speed:_Carbon",
+    href: "/need-for-speed-carbon",
   },
   {
     label: "Need for Speed™ Most Wanted (2005)",

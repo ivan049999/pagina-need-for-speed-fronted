@@ -63,7 +63,7 @@ export const NFS_GAMES: NfsGame[] = [
   },
   {
     label: "Need for Speed™ ProStreet",
-    href: "https://es.wikipedia.org/wiki/Need_for_Speed:_ProStreet",
+    href: "/need-for-speed-prostreet",
   },
   {
     label: "Need for Speed™ Carbon",

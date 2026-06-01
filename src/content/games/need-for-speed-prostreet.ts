@@ -77,12 +77,12 @@ export const NEED_FOR_SPEED_PROSTREET: GamePageContent = {
     },
     {
       id: "hero-5",
-      src: `${CARBON_ASSETS}/nfsc-imagen4.webp`,
+      src: `${PROSTREET_ASSETS}/need-for-speed-proStreet-imagen6.png`,
       alt: "Need for Speed ProStreet — captura 4",
     },
     {
       id: "hero-6",
-      src: `${CARBON_ASSETS}/nfsc-imagen5.jpg`,
+      src: `${PROSTREET_ASSETS}/need-for-speed-proStreet-imagen5.webp`,
       alt: "Need for Speed ProStreet — captura 5",
     },
   ],

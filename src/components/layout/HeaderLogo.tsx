@@ -16,6 +16,8 @@ const PAGE_LOGOS: Record<string, string> = {
     "/images/logos/logo-need-for-speed-carbon.jpg",
   "/need-for-speed-prostreet":
     "/images/logos/logo-need-for-speed-pro-street.jpg",
+  "/need-for-speed-undercover":
+    "/images/logos/logo-need-for-speed-undercover.jpg",
 };
 
 export function HeaderLogo() {

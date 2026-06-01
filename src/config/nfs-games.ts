@@ -59,7 +59,7 @@ export const NFS_GAMES: NfsGame[] = [
   },
   {
     label: "Need for Speed™ Undercover",
-    href: "https://es.wikipedia.org/wiki/Need_for_Speed:_Undercover",
+    href: "/need-for-speed-undercover",
   },
   {
     label: "Need for Speed™ ProStreet",

@@ -23,6 +23,8 @@ const PAGE_LOGOS: Record<string, string> = {
   "/need-for-speed-shift": "/images/logos/logo-need-for-speed-shift.png",
   "/need-for-speed-shift-2-unleashed":
     "/images/logos/logo-need-for-speed-shift-2-unleashed.png",
+  "/need-for-speed-the-run":
+    "/images/logos/logo-need-for-speed-the-run.png",
   "/need-for-speed-undercover":
     "/images/logos/logo-need-for-speed-undercover.jpg",
 };

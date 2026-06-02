@@ -39,7 +39,7 @@ export const NFS_GAMES: NfsGame[] = [
   },
   {
     label: "Need for Speed™ Shift 2 Unleashed",
-    href: "https://es.wikipedia.org/wiki/Need_for_Speed:_Shift_2_Unleashed",
+    href: "/need-for-speed-shift-2-unleashed",
   },
   {
     label: "Need for Speed™ Shift",

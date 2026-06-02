@@ -53,6 +53,31 @@ export function GameMediaHero({ title, media, videoSrc }: Props) {
     video.muted = false;
     video.volume = 1;
 
+    if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
+      video.load();
+      const loaded = await new Promise<boolean>((resolve) => {
+        const onReady = () => {
+          cleanup();
+          resolve(true);
+        };
+        const onError = () => {
+          cleanup();
+          resolve(false);
+        };
+        const cleanup = () => {
+          video.removeEventListener("loadeddata", onReady);
+          video.removeEventListener("error", onError);
+        };
+        video.addEventListener("loadeddata", onReady);
+        video.addEventListener("error", onError);
+      });
+
+      if (!loaded) {
+        setIsPlaying(false);
+        return;
+      }
+    }
+
     try {
       await video.play();
     } catch {
@@ -85,7 +110,9 @@ export function GameMediaHero({ title, media, videoSrc }: Props) {
             preload="metadata"
             className={cn(
               "h-full w-full object-cover",
-              !isPlaying && "pointer-events-none absolute inset-0 opacity-0",
+              isPlaying
+                ? "relative z-10 bg-black"
+                : "pointer-events-none absolute inset-0 opacity-0",
             )}
             onEnded={stopVideo}
           />

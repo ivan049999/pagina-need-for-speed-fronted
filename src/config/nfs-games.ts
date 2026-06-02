@@ -31,7 +31,7 @@ export const NFS_GAMES: NfsGame[] = [
   },
   {
     label: "Need for Speed™ Most Wanted (2012)",
-    href: "https://www.ea.com/es-es/games/need-for-speed/need-for-speed-most-wanted",
+    href: "/need-for-speed-most-wanted-2012",
   },
   {
     label: "Need for Speed™ The Run",

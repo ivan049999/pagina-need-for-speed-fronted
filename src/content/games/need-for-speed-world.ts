@@ -63,27 +63,27 @@ export const NEED_FOR_SPEED_WORLD: GamePageContent = {
     },
     {
       id: "hero-2",
-      src: `${UNDERCOVER_ASSETS}/need_for_speed_undercover-imagen-2.jpg`,
+      src: `${WORLD_ASSETS}/need-for-speed-world-imagen-2.avif`,
       alt: "Need for Speed World — captura 1",
     },
     {
       id: "hero-3",
-      src: `${UNDERCOVER_ASSETS}/need_for_speed_undercover-imagen-3.jpg`,
+      src: `${WORLD_ASSETS}/need-for-speed-world-imagen-3.jpg`,
       alt: "Need for Speed World — captura 2",
     },
     {
       id: "hero-4",
-      src: `${UNDERCOVER_ASSETS}/need_for_speed_undercover-imagen-4.jpg`,
+      src: `${WORLD_ASSETS}/need-for-speed-world-imagen-4.jpg`,
       alt: "Need for Speed World — captura 3",
     },
     {
       id: "hero-5",
-      src: `${UNDERCOVER_ASSETS}/need_for_speed_undercover-imagen-5.jpg`,
+      src: `${WORLD_ASSETS}/need-for-speed-world-imagen-5.webp`,
       alt: "Need for Speed World — captura 4",
     },
     {
       id: "hero-6",
-      src: `${UNDERCOVER_ASSETS}/need_for_speed_undercover-imagen-6.jpg`,
+      src: `${WORLD_ASSETS}/need-for-speed-world-imagen-6.jpg`,
       alt: "Need for Speed World — captura 5",
     },
   ],

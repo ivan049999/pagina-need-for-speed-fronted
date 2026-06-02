@@ -2,8 +2,12 @@
 
 import Link from "next/link";
 import { useEffect, useRef, useState } from "react";
-import { NFS_GAMES } from "@/config/nfs-games";
+import {
+  fetchNfsCatalog,
+  mapStaticGamesToCatalog,
+} from "@/lib/games/fetchNfsCatalog";
 import { isInternalNfsGameHref } from "@/lib/nfs-game-link";
+import type { NfsCatalogEntry } from "@/types/nfs-catalog";
 
 function ChevronIcon({ open }: { open: boolean }) {
   return (
@@ -27,9 +31,32 @@ function ChevronIcon({ open }: { open: boolean }) {
   );
 }
 
+function toMenuGames(entries: NfsCatalogEntry[]) {
+  return entries.map((game) => ({
+    label: game.label,
+    href: game.href,
+  }));
+}
+
+const FALLBACK_GAMES = toMenuGames(mapStaticGamesToCatalog());
+
 export function NavGamesDropdown() {
   const [open, setOpen] = useState(false);
+  const [games, setGames] = useState(FALLBACK_GAMES);
   const ref = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    let cancelled = false;
+
+    void fetchNfsCatalog().then((entries) => {
+      if (cancelled || entries.length === 0) return;
+      setGames(toMenuGames(entries));
+    });
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   useEffect(() => {
     function onPointerDown(event: MouseEvent) {
@@ -74,7 +101,7 @@ export function NavGamesDropdown() {
           role="menu"
           className="absolute left-0 top-full z-[60] max-h-[70vh] min-w-[20rem] overflow-y-auto border border-[#3d8bfd]/70 bg-[#0f1a2e] py-1 shadow-[0_8px_24px_rgba(0,0,0,0.45)]"
         >
-          {NFS_GAMES.map((game) => {
+          {games.map((game) => {
             const internal = isInternalNfsGameHref(game.href);
             return (
               <Link

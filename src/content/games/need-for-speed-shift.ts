@@ -47,7 +47,7 @@ export const NEED_FOR_SPEED_SHIFT: GamePageContent = {
     ],
   },
   heroVideoSrc:
-    "/videos/Juegos-Need-For-Speed/Need-For-Speed-Shift/need-for-speed-shift-video-1.webm",
+    "/videos/Juegos-Need-For-Speed/Need-For-Speed-Shift/need-for-speed-shift-video-1.mp4",
   coverImage: {
     id: "cover",
     src: `${SHIFT_ASSETS}/need-for-speed-shift-portada-oficial.jpg`,

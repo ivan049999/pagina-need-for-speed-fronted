@@ -45,9 +45,7 @@ export const NEED_FOR_SPEED_UNDERGROUND: GamePageContent = {
     "Need for Speed es una marca registrada de Electronic Arts Inc. Las marcas de terceros son propiedad de sus respectivos titulares.",
   rating: {
     system: "pegi",
-    age: 3,
-    ageBadgeSrc:
-      "/images/juegos-need-for-speed/Need-For-Speed-Underground/Pegi-3-Icono.png",
+    age: 12,
     descriptors: [
       {
         id: "violence",
@@ -99,37 +97,55 @@ export const NEED_FOR_SPEED_UNDERGROUND: GamePageContent = {
   about: {
     title: "Acerca del juego",
     description:
-      "Need for Speed™ Underground te lleva a las calles con un enfoque en la personalización extrema, carreras ilegales y la cultura del tuning. Compite en circuitos urbanos, desbloquea piezas visuales y mecánicas, y escala desde coches de calle hasta máquinas de leyenda mientras construyes tu reputación en la escena underground.",
+      "Need for Speed™ Underground, desarrollado por EA Black Box, reinventó la saga con carreras callejeras ilegales en una ciudad viva. Gana reputación, personaliza tu coche por dentro y por fuera, y compite en circuitos, sprints, derrapes y drag en la escena underground.",
     platforms: "PC, PlayStation 2, Xbox, GameCube",
     languages:
-      "Checo, Alemán, Inglés, Español, Francés, Italiano, Holandés, Sueco, Danés, Noruego, Finlandés, Polaco, Portugués, Ruso, Japonés",
+      "Inglés, Francés, Alemán, Italiano, Español, Sueco, Danés, Noruego, Finlandés, Holandés, Polaco, Portugués, Japonés",
     publisher: "Electronic Arts",
-    releaseDate: "17 nov 2003",
+    releaseDate: "14 nov 2003",
   },
   systemRequirements: {
     title: "Requisitos del sistema",
     osLabel: "Windows",
     minimum: [
-      { label: "Sistema operativo", value: "Windows 98 / ME / 2000 / XP" },
-      { label: "Procesador", value: "Pentium III o Athlon equivalente a 500 MHz" },
+      {
+        label: "Sistema operativo",
+        value: "Windows 98, 98 SE, ME, 2000 o XP",
+      },
+      {
+        label: "Procesador",
+        value: "Intel Pentium III a 500 MHz o AMD equivalente",
+      },
       { label: "Memoria", value: "128 MB RAM" },
       { label: "Disco duro", value: "1,4 GB de espacio libre" },
       {
         label: "Tarjeta gráfica",
-        value: "32 MB, compatible con DirectX 8.1 (GeForce 2 / Radeon)",
+        value:
+          "32 MB compatible con DirectX 8.1 (NVIDIA GeForce 2 GTS / ATI Radeon 7500)",
       },
-      { label: "Tarjeta de sonido", value: "Compatible con DirectX" },
+      {
+        label: "Tarjeta de sonido",
+        value: "Compatible con DirectX 8.1",
+      },
+      { label: "Unidad óptica", value: "Unidad de CD-ROM 8x" },
     ],
     recommended: [
       { label: "Sistema operativo", value: "Windows XP" },
-      { label: "Procesador", value: "Pentium 4 o Athlon XP a 1,4 GHz" },
+      {
+        label: "Procesador",
+        value: "Intel Pentium 4 a 1,4 GHz o AMD equivalente",
+      },
       { label: "Memoria", value: "256 MB RAM" },
       { label: "Disco duro", value: "1,4 GB de espacio libre" },
       {
         label: "Tarjeta gráfica",
         value: "64 MB o superior, compatible con DirectX 8.1",
       },
-      { label: "Tarjeta de sonido", value: "Compatible con DirectX" },
+      {
+        label: "Tarjeta de sonido",
+        value: "Compatible con DirectX 8.1",
+      },
+      { label: "Unidad óptica", value: "Unidad de CD-ROM 8x" },
     ],
   },
 };

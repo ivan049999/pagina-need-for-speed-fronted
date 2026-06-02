@@ -47,7 +47,7 @@ export const NFS_GAMES: NfsGame[] = [
   },
   {
     label: "Need for Speed™ Hot Pursuit (2010)",
-    href: "https://es.wikipedia.org/wiki/Need_for_Speed:_Hot_Pursuit_(2010)",
+    href: "/need-for-speed-hot-pursuit-2010",
   },
   {
     label: "Need for Speed™ Nitro",

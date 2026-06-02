@@ -18,6 +18,8 @@ const PAGE_LOGOS: Record<string, string> = {
     "/images/logos/logo-need-for-speed-pro-street.jpg",
   "/need-for-speed-world": "/images/logos/logo-need-for-speed-world.jpg",
   "/need-for-speed-nitro": "/images/logos/logo-need-for-speed-nitro.png",
+  "/need-for-speed-hot-pursuit-2010":
+    "/images/logos/logo-need-for-speed-hot-pursuit-2010.png",
   "/need-for-speed-undercover":
     "/images/logos/logo-need-for-speed-undercover.jpg",
 };

@@ -43,7 +43,7 @@ export const NFS_GAMES: NfsGame[] = [
   },
   {
     label: "Need for Speed™ Shift",
-    href: "https://es.wikipedia.org/wiki/Need_for_Speed:_Shift",
+    href: "/need-for-speed-shift",
   },
   {
     label: "Need for Speed™ Hot Pursuit (2010)",

@@ -51,7 +51,7 @@ export const NFS_GAMES: NfsGame[] = [
   },
   {
     label: "Need for Speed™ Nitro",
-    href: "https://es.wikipedia.org/wiki/Need_for_Speed:_Nitro",
+    href: "/need-for-speed-nitro",
   },
   {
     label: "Need for Speed™ World",

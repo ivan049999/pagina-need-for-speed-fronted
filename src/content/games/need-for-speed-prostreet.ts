@@ -38,11 +38,12 @@ export const NEED_FOR_SPEED_PROSTREET: GamePageContent = {
   rating: {
     system: "pegi",
     age: 7,
+    ageBadgeSrc: `${PROSTREET_ASSETS}/Pegi-7-Icono.png`,
     descriptors: [
       {
         id: "violence",
         label: "Violence",
-        iconSrc: `${CARBON_ASSETS}/violence-Icono.png`,
+        iconSrc: `${PROSTREET_ASSETS}/violence-Icono.png`,
       },
     ],
   },

@@ -37,6 +37,7 @@ export const NEED_FOR_SPEED_NITRO: GamePageContent = {
   rating: {
     system: "pegi",
     age: 7,
+    ageBadgeSrc: `${NITRO_ASSETS}/Pegi-7-Icono.png`,
     descriptors: [
       {
         id: "violence",

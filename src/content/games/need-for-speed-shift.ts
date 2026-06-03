@@ -37,6 +37,7 @@ export const NEED_FOR_SPEED_SHIFT: GamePageContent = {
   rating: {
     system: "pegi",
     age: 7,
+    ageBadgeSrc: `${SHIFT_ASSETS}/Pegi-7-Icono.png`,
     descriptors: [
       {
         id: "violence",

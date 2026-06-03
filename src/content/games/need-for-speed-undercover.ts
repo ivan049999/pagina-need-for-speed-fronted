@@ -38,11 +38,12 @@ export const NEED_FOR_SPEED_UNDERCOVER: GamePageContent = {
   rating: {
     system: "pegi",
     age: 7,
+    ageBadgeSrc: `${UNDERCOVER_ASSETS}/Pegi-7-Icono.png`,
     descriptors: [
       {
         id: "violence",
         label: "Violence",
-        iconSrc: `${CARBON_ASSETS}/violence-Icono.png`,
+        iconSrc: `${UNDERCOVER_ASSETS}/violence-Icono.png`,
       },
     ],
   },

@@ -35,6 +35,7 @@ export const NEED_FOR_SPEED_CARBON: GamePageContent = {
   rating: {
     system: "pegi",
     age: 7,
+    ageBadgeSrc: `${ASSET_BASE}/Pegi-7-Icono.png`,
     descriptors: [
       {
         id: "violence",

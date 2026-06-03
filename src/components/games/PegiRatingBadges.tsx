@@ -65,8 +65,28 @@ const DESCRIPTOR_ICONS: Record<PegiDescriptor["id"], () => ReactElement> = {
   fear: FearIcon,
 };
 
-function PegiAgeBadge({ age, src }: { age: number; src?: string }) {
+function PegiAgeBadge({
+  age,
+  src,
+  combined,
+}: {
+  age: number;
+  src?: string;
+  combined?: boolean;
+}) {
   if (src) {
+    if (combined) {
+      return (
+        <Image
+          src={src}
+          alt={`PEGI ${age}`}
+          width={106}
+          height={58}
+          className="h-[58px] w-auto shrink-0 object-contain object-left"
+          draggable={false}
+        />
+      );
+    }
     return <PegiBadgeImage src={src} alt={`PEGI ${age}`} />;
   }
 
@@ -134,6 +154,8 @@ export function PegiRatingBadges({ rating }: PegiRatingBadgesProps) {
   }
 
   const descriptors = rating.descriptors ?? [];
+  const combinedPegi =
+    Boolean(rating.ageBadgeSrc) && descriptors.length === 0;
   const ariaParts = [`PEGI ${rating.age}`, ...descriptors.map((d) => d.label)];
 
   return (
@@ -142,7 +164,11 @@ export function PegiRatingBadges({ rating }: PegiRatingBadgesProps) {
       role="group"
       aria-label={ariaParts.join(", ")}
     >
-      <PegiAgeBadge age={rating.age} src={rating.ageBadgeSrc} />
+      <PegiAgeBadge
+        age={rating.age}
+        src={rating.ageBadgeSrc}
+        combined={combinedPegi}
+      />
       {descriptors.map((descriptor) => (
         <PegiDescriptorBadge key={descriptor.id} descriptor={descriptor} />
       ))}

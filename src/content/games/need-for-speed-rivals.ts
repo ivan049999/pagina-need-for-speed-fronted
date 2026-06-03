@@ -47,7 +47,7 @@ export const NEED_FOR_SPEED_RIVALS: GamePageContent = {
     ],
   },
   heroVideoSrc:
-    "/videos/Juegos-Need-For-Speed/Need-For-Speed-Rivals/need-for-speed-rivals-video-1.mp4",
+    "/videos/Juegos-Need-For-Speed/Need-For-Speed-Rivals/need-for-speed-rivals-video-1.webm",
   coverImage: {
     id: "cover",
     src: `${RIVALS_ASSETS}/need-for-speed-rivals-portada-oficial.jpg`,

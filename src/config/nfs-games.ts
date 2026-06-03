@@ -23,7 +23,7 @@ export const NFS_GAMES: NfsGame[] = [
   },
   {
     label: "Need for Speed™ No Limits",
-    href: "https://www.ea.com/es-es/games/need-for-speed/need-for-speed-no-limits",
+    href: "/need-for-speed-no-limits",
   },
   {
     label: "Need for Speed™ Rivals",

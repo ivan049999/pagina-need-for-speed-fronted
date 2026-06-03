@@ -38,11 +38,12 @@ export const NEED_FOR_SPEED_SHIFT_2_UNLEASHED: GamePageContent = {
   rating: {
     system: "pegi",
     age: 12,
+    ageBadgeSrc: `${SHIFT2_ASSETS}/pegi12-icono.png`,
     descriptors: [
       {
         id: "violence",
         label: "Violence",
-        iconSrc: `${CARBON_ASSETS}/violence-Icono.png`,
+        iconSrc: `${SHIFT2_ASSETS}/violence-icono.png`,
       },
     ],
   },

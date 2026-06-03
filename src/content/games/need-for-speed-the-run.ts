@@ -37,7 +37,7 @@ export const NEED_FOR_SPEED_THE_RUN: GamePageContent = {
     "Need for Speed es una marca registrada de Electronic Arts Inc. Las marcas de terceros son propiedad de sus respectivos titulares.",
   rating: {
     system: "pegi",
-    age: 12,
+    age: 7,
     descriptors: [
       {
         id: "violence",

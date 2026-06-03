@@ -40,6 +40,7 @@ const PAGE_LOGOS: Record<string, string> = {
 export function HeaderLogo() {
   const pathname = usePathname();
   const src = PAGE_LOGOS[pathname] ?? DEFAULT_LOGO;
+  const isDefaultLogo = src === DEFAULT_LOGO;
 
   return (
     <Link href="/" className="flex shrink-0 items-center">
@@ -48,6 +49,7 @@ export function HeaderLogo() {
         alt="Need for Speed"
         width={160}
         height={80}
+        unoptimized={isDefaultLogo}
         className="h-16 w-auto rounded-sm object-contain md:h-20 lg:h-24"
         priority
       />

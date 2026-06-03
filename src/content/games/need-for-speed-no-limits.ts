@@ -48,7 +48,7 @@ export const NEED_FOR_SPEED_NO_LIMITS: GamePageContent = {
     ],
   },
   heroVideoSrc:
-    "/videos/Juegos-Need-For-Speed/Need-For-Speed-No-Limits/need-for-speed-no-limits-video-1.mp4",
+    "/videos/Juegos-Need-For-Speed/Need-For-Speed-No-Limits/need-for-speed-no-limits-video-1.webm",
   coverImage: {
     id: "cover",
     src: `${NO_LIMITS_ASSETS}/need-for-speed-no-limits-portada-oficial.jpg`,

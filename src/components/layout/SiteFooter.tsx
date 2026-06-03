@@ -151,6 +151,7 @@ export function SiteFooter() {
                 alt=""
                 width={48}
                 height={48}
+                unoptimized
                 className="h-12 w-12 rounded-sm object-cover ring-1 ring-nfs-neon/30"
               />
               <span className="text-glow-neon">NFS</span>

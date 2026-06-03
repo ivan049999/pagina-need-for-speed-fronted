@@ -38,11 +38,12 @@ export const NEED_FOR_SPEED_HOT_PURSUIT_2010: GamePageContent = {
   rating: {
     system: "pegi",
     age: 7,
+    ageBadgeSrc: `${HOT_PURSUIT_ASSETS}/Pegi-7-Icono.png`,
     descriptors: [
       {
         id: "violence",
         label: "Violence",
-        iconSrc: `${CARBON_ASSETS}/violence-Icono.png`,
+        iconSrc: `${HOT_PURSUIT_ASSETS}/violence-Icono.png`,
       },
     ],
   },

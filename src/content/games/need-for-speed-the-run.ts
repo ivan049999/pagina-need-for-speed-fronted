@@ -38,6 +38,7 @@ export const NEED_FOR_SPEED_THE_RUN: GamePageContent = {
   rating: {
     system: "pegi",
     age: 7,
+    ageBadgeSrc: `${THE_RUN_ASSETS}/Pegi-7-Icono.png`,
     descriptors: [
       {
         id: "violence",

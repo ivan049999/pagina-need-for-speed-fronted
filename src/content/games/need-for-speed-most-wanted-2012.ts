@@ -39,7 +39,13 @@ export const NEED_FOR_SPEED_MOST_WANTED_2012: GamePageContent = {
     system: "pegi",
     age: 12,
     ageBadgeSrc: `${MW2012_ASSETS}/pegi12-icono.png`,
-    descriptors: [],
+    descriptors: [
+      {
+        id: "violence",
+        label: "Violence",
+        iconSrc: `${MW2012_ASSETS}/violence-Icono.png`,
+      },
+    ],
   },
   heroVideoSrc:
     "/videos/Juegos-Need-For-Speed/Need-For-Speed-Most-Wanted-2012/need-for-speed-most-wanted-2012-video-1.mp4",

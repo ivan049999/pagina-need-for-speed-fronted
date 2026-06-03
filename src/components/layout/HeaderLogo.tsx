@@ -12,6 +12,8 @@ const PAGE_LOGOS: Record<string, string> = {
     "/images/logos/logo-need-for-speed-underground-2.png",
   "/need-for-speed-most-wanted-2005":
     "/images/logos/logo-need-for-speed-most-wanted.jpg",
+  "/need-for-speed-rivals":
+    "/images/logos/logo-need-for-speed-rivals.png",
   "/need-for-speed-most-wanted-2012":
     "/images/logos/logo-need-for-speed-most-wanted-2012.png",
   "/need-for-speed-carbon":

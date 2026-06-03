@@ -27,7 +27,7 @@ export const NFS_GAMES: NfsGame[] = [
   },
   {
     label: "Need for Speed™ Rivals",
-    href: "https://www.ea.com/es-es/games/need-for-speed/need-for-speed-rivals",
+    href: "/need-for-speed-rivals",
   },
   {
     label: "Need for Speed™ Most Wanted (2012)",

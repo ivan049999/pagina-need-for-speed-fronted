@@ -28,6 +28,11 @@ export function useGameLivePrice({
       });
       if (!res.ok) return;
       const json = (await res.json()) as { data: GameLivePrice };
+      if (json.data.source === "fallback") {
+        setPrice(fallbackPrice);
+        setPriceLabel(fallbackPriceLabel);
+        return;
+      }
       setPrice(json.data.formatted);
       setPriceLabel(json.data.priceLabel);
     } catch {

@@ -10,7 +10,7 @@ export const NEED_FOR_SPEED_HOT_PURSUIT_2010: GamePageContent = {
   title: "Need for Speed™ Hot Pursuit (2010)",
   tags: ["Juego básico", "Carreras"],
   priceLabel: "Desde",
-  price: "9,99 €",
+  price: "—",
   priceNote: "Pueden aplicarse impuestos aplicables en la compra.",
   ctaLabel: "Seleccionar Plataforma",
   storePlatforms: [

@@ -8,7 +8,7 @@ export const NEED_FOR_SPEED_MOST_WANTED_2005: GamePageContent = {
   title: "Need for Speed™ Most Wanted (2005)",
   tags: ["Juego básico", "Carreras"],
   priceLabel: "Desde",
-  price: "9,99 €",
+  price: "—",
   priceNote: "Pueden aplicarse impuestos aplicables en la compra.",
   ctaLabel: "Seleccionar Plataforma",
   storePlatforms: [

@@ -7,7 +7,7 @@ export const NEED_FOR_SPEED_UNDERGROUND_2: GamePageContent = {
   title: "Need for Speed™ Underground 2",
   tags: ["Juego básico", "Carreras"],
   priceLabel: "Desde",
-  price: "9,99 €",
+  price: "—",
   priceNote: "Pueden aplicarse impuestos aplicables en la compra.",
   ctaLabel: "Seleccionar Plataforma",
   storePlatforms: [

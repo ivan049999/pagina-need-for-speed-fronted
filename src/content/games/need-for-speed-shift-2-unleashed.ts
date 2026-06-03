@@ -10,7 +10,7 @@ export const NEED_FOR_SPEED_SHIFT_2_UNLEASHED: GamePageContent = {
   title: "Need for Speed™ Shift 2 Unleashed",
   tags: ["Juego básico", "Carreras"],
   priceLabel: "Desde",
-  price: "9,99 €",
+  price: "—",
   priceNote: "Pueden aplicarse impuestos aplicables en la compra.",
   ctaLabel: "Seleccionar Plataforma",
   storePlatforms: [

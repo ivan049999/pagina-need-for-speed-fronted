@@ -18,6 +18,8 @@ const PAGE_LOGOS: Record<string, string> = {
     "/images/logos/logo-need-for-speed-payback.png",
   "/need-for-speed-heat":
     "/images/logos/logo-need-for-speed-heat.png",
+  "/need-for-speed-hot-pursuit-remastered":
+    "/images/logos/logo-need-for-speed-hot-pursuit-remastered.png",
   "/need-for-speed-no-limits":
     "/images/logos/logo-need-for-speed-no-limits.png",
   "/need-for-speed-rivals":

@@ -7,7 +7,7 @@ export const NFS_GAMES: NfsGame[] = [
   },
   {
     label: "Need for Speed™ Hot Pursuit Remastered",
-    href: "https://www.ea.com/es-es/games/need-for-speed/need-for-speed-hot-pursuit-remastered",
+    href: "/need-for-speed-hot-pursuit-remastered",
   },
   {
     label: "Need for Speed™ Heat",

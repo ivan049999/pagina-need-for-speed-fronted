@@ -8,6 +8,10 @@ import type {
 const PEGI_BADGE_WIDTH = 50;
 const PEGI_BADGE_HEIGHT = 58;
 
+function isLocalGameAsset(src: string) {
+  return src.startsWith("/images/");
+}
+
 function PegiBadgeImage({ src, alt }: { src: string; alt: string }) {
   return (
     <div
@@ -18,6 +22,7 @@ function PegiBadgeImage({ src, alt }: { src: string; alt: string }) {
         src={src}
         alt={alt}
         fill
+        unoptimized={isLocalGameAsset(src)}
         sizes={`${PEGI_BADGE_WIDTH}px`}
         className="object-cover object-center"
         draggable={false}
@@ -82,6 +87,7 @@ function PegiAgeBadge({
           alt={`PEGI ${age}`}
           width={106}
           height={58}
+          unoptimized={isLocalGameAsset(src)}
           className="h-[58px] w-auto shrink-0 object-contain object-left"
           draggable={false}
         />

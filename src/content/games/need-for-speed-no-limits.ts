@@ -1,7 +1,5 @@
 import type { GamePageContent } from "@/content/games/game-page-content";
 
-const CARBON_ASSETS =
-  "/images/juegos-need-for-speed/Need-For-Speed-Carbon";
 const NO_LIMITS_ASSETS =
   "/images/juegos-need-for-speed/Need-For-Speed-No-Limits";
 
@@ -17,20 +15,14 @@ export const NEED_FOR_SPEED_NO_LIMITS: GamePageContent = {
     {
       id: "ea",
       label: "Descargar en App Store",
-      href: "https://apps.apple.com/app/need-for-speed-no-limits/id959498315",
-      iconSrc: `${CARBON_ASSETS}/CeX_Logo.webp`,
+      href: "https://apps.apple.com/us/app/need-for-speed-no-limits-game/id883393043",
+      iconSrc: `${NO_LIMITS_ASSETS}/logo_app_store.png`,
     },
     {
       id: "xbox",
       label: "Descargar en Google Play",
-      href: "https://play.google.com/store/apps/details?id=com.ea.gp.nfsnl",
-      iconSrc: `${CARBON_ASSETS}/logoAmazon.png`,
-    },
-    {
-      id: "steam",
-      label: "Página oficial en EA",
-      href: "https://www.ea.com/es-es/games/need-for-speed/need-for-speed-no-limits",
-      iconSrc: `${CARBON_ASSETS}/logoEbay.png`,
+      href: "https://play.google.com/store/apps/details?id=com.ea.game.nfs14_row&utm_source=emea_Med",
+      iconSrc: `${NO_LIMITS_ASSETS}/logo_google_play.png`,
     },
   ],
   legalNote:

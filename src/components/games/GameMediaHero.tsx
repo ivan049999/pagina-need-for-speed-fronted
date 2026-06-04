@@ -11,6 +11,10 @@ type Props = {
   videoSrc: string;
 };
 
+function isLocalGameAsset(src: string) {
+  return src.startsWith("/images/");
+}
+
 export function GameMediaHero({ title, media, videoSrc }: Props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
@@ -124,6 +128,7 @@ export function GameMediaHero({ title, media, videoSrc }: Props) {
               src={active.src}
               alt={active.alt}
               fill
+              unoptimized={isLocalGameAsset(active.src)}
               className="object-cover"
               sizes="(max-width: 1024px) 100vw, 65vw"
               priority
@@ -179,6 +184,7 @@ export function GameMediaHero({ title, media, videoSrc }: Props) {
                 src={item.src}
                 alt=""
                 fill
+                unoptimized={isLocalGameAsset(item.src)}
                 className="object-cover"
                 sizes="112px"
               />

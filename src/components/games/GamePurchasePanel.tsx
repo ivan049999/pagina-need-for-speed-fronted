@@ -49,6 +49,7 @@ export function GamePurchasePanel({
             src={coverImage.src}
             alt={coverImage.alt}
             fill
+            unoptimized={coverImage.src.startsWith("/images/")}
             className="object-cover"
             sizes="220px"
           />

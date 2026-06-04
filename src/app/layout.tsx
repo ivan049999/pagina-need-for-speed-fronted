@@ -1,9 +1,7 @@
 import type { Metadata } from "next";
 import { Orbitron } from "next/font/google";
 import "@/app/globals.css";
-import { ElectronicArtsBar } from "@/components/layout/ElectronicArtsBar";
-import { SiteHeader } from "@/components/layout/SiteHeader";
-import { SiteFooter } from "@/components/layout/SiteFooter";
+import { SiteChrome } from "@/components/layout/SiteChrome";
 import { Providers } from "@/components/providers/Providers";
 
 const nfsFont = Orbitron({
@@ -30,12 +28,7 @@ export default function RootLayout({
     <html lang="es" className={nfsFont.variable}>
       <body className="font-body antialiased bg-nfs-asphalt text-white">
         <Providers>
-          <div className="sticky top-0 z-50">
-            <ElectronicArtsBar />
-            <SiteHeader />
-          </div>
-          <main>{children}</main>
-          <SiteFooter />
+          <SiteChrome>{children}</SiteChrome>
         </Providers>
       </body>
     </html>

@@ -3,7 +3,7 @@ export type NfsGame = { label: string; href: string };
 export const NFS_GAMES: NfsGame[] = [
   {
     label: "Need for Speed™ Unbound",
-    href: "https://www.ea.com/es-es/games/need-for-speed/need-for-speed-unbound",
+    href: "/need-for-speed-unbound",
   },
   {
     label: "Need for Speed™ Hot Pursuit Remastered",

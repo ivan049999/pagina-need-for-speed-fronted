@@ -10,6 +10,7 @@ const config: Config = {
           asphalt: "#0a0a0f",
           chrome: "#c0c5ce",
           heat: "#ff3d00",
+          unbound: "#39ff14",
         },
       },
       fontFamily: {

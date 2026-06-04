@@ -37,8 +37,8 @@ export const NEED_FOR_SPEED_HOT_PURSUIT_REMASTERED: GamePageContent = {
     "Need for Speed es una marca registrada de Electronic Arts Inc. Las marcas de terceros son propiedad de sus respectivos titulares.",
   rating: {
     system: "pegi",
-    age: 12,
-    ageBadgeSrc: `${HP_REMASTERED_ASSETS}/pegi12-icono.png`,
+    age: 7,
+    ageBadgeSrc: `${HP_REMASTERED_ASSETS}/Pegi-7-Icono.png`,
     descriptors: [
       {
         id: "violence",
@@ -48,7 +48,7 @@ export const NEED_FOR_SPEED_HOT_PURSUIT_REMASTERED: GamePageContent = {
     ],
   },
   heroVideoSrc:
-    "/videos/Juegos-Need-For-Speed/Need-For-Speed-Hot-Pursuit-Remastered/need-for-speed-hot-pursuit-remastered-video-1.mp4",
+    "/videos/Juegos-Need-For-Speed/Need-For-Speed-Hot-Pursuit-Remastered/need-for-speed-hot-pursuit-remastered-video-1.webm",
   coverImage: {
     id: "cover",
     src: `${HP_REMASTERED_ASSETS}/need-for-speed-hot-pursuit-remastered-portada-oficial.jpg`,

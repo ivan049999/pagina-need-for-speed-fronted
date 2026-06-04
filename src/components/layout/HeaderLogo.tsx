@@ -14,6 +14,8 @@ const PAGE_LOGOS: Record<string, string> = {
     "/images/logos/logo-need-for-speed-most-wanted.jpg",
   "/need-for-speed-2015":
     "/images/logos/logo-need-for-speed-2015.png",
+  "/need-for-speed-payback":
+    "/images/logos/logo-need-for-speed-payback.png",
   "/need-for-speed-no-limits":
     "/images/logos/logo-need-for-speed-no-limits.png",
   "/need-for-speed-rivals":

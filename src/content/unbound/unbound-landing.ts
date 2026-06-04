@@ -89,19 +89,19 @@ export const UNBOUND_FEATURES = {
       title: "Recintos y cochazos",
       description:
         "Desbloquea coches legendarios como el BMW M3 GTR escapando de zonas de confinamiento en distintos modos de juego y demuestra tu estilo en Lakeshore.",
-      imageSrc: `${IMG}/need-for-speed-unbound-imagen-4.jpg`,
+      imageSrc: `${IMG}/need-for-speed-unbound-imagen-7.avif`,
     },
     {
       title: "Graffiti y personalización",
       description:
         "Expresa tu identidad con efectos de graffiti, piezas únicas y un garaje profundo para dejar tu marca en cada carrera.",
-      imageSrc: `${IMG}/need-for-speed-unbound-imagen-5.webp`,
+      imageSrc: `${IMG}/need-for-speed-unbound-imagen-8.avif`,
     },
     {
-      title: "Multijugador y rivales",
+      title: "Motos",
       description:
-        "Compite contra la comunidad, forma equipos y sube en el ranking en eventos online llenos de acción.",
-      imageSrc: `${IMG}/need-for-speed-unbound-imagen-3.jpg`,
+        "¡Conduce por primera vez en NFS la BMW S 1000 RR (2019) en el modo Confinamiento y en algunas listas de eventos especiales de motos de JcJ y el modo libre! Con las motos podrás entrar a los recintos sin necesidad de pagar y son inmunes a la zona, así que úsalas bien.",
+      imageSrc: `${IMG}/need-for-speed-unbound-imagen-9.avif`,
     },
   ],
 };

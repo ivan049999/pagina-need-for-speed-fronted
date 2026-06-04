@@ -15,9 +15,49 @@ function isLocalGameAsset(src: string) {
   return src.startsWith("/images/");
 }
 
+function waitForVideoReady(
+  video: HTMLVideoElement,
+  timeoutMs = 20000,
+): Promise<boolean> {
+  if (video.readyState >= HTMLMediaElement.HAVE_FUTURE_DATA) {
+    return Promise.resolve(true);
+  }
+
+  video.load();
+
+  return new Promise((resolve) => {
+    const timer = window.setTimeout(() => {
+      cleanup();
+      resolve(false);
+    }, timeoutMs);
+
+    const onReady = () => {
+      cleanup();
+      resolve(true);
+    };
+
+    const onError = () => {
+      cleanup();
+      resolve(false);
+    };
+
+    const cleanup = () => {
+      window.clearTimeout(timer);
+      video.removeEventListener("canplay", onReady);
+      video.removeEventListener("loadeddata", onReady);
+      video.removeEventListener("error", onError);
+    };
+
+    video.addEventListener("canplay", onReady);
+    video.addEventListener("loadeddata", onReady);
+    video.addEventListener("error", onError);
+  });
+}
+
 export function GameMediaHero({ title, media, videoSrc }: Props) {
   const [activeIndex, setActiveIndex] = useState(0);
   const [isPlaying, setIsPlaying] = useState(false);
+  const [isLoadingVideo, setIsLoadingVideo] = useState(false);
   const videoRef = useRef<HTMLVideoElement>(null);
   const active = media[activeIndex] ?? media[0];
   const canPlayVideo = Boolean(videoSrc) && activeIndex === 0;
@@ -29,6 +69,7 @@ export function GameMediaHero({ title, media, videoSrc }: Props) {
       video.currentTime = 0;
     }
     setIsPlaying(false);
+    setIsLoadingVideo(false);
   }
 
   function goPrev() {
@@ -52,35 +93,20 @@ export function GameMediaHero({ title, media, videoSrc }: Props) {
     const video = videoRef.current;
     if (!video) return;
 
-    setIsPlaying(true);
+    setIsLoadingVideo(true);
     video.currentTime = 0;
     video.muted = false;
     video.volume = 1;
 
-    if (video.readyState < HTMLMediaElement.HAVE_CURRENT_DATA) {
-      video.load();
-      const loaded = await new Promise<boolean>((resolve) => {
-        const onReady = () => {
-          cleanup();
-          resolve(true);
-        };
-        const onError = () => {
-          cleanup();
-          resolve(false);
-        };
-        const cleanup = () => {
-          video.removeEventListener("loadeddata", onReady);
-          video.removeEventListener("error", onError);
-        };
-        video.addEventListener("loadeddata", onReady);
-        video.addEventListener("error", onError);
-      });
+    const loaded = await waitForVideoReady(video);
+    setIsLoadingVideo(false);
 
-      if (!loaded) {
-        setIsPlaying(false);
-        return;
-      }
+    if (!loaded) {
+      setIsPlaying(false);
+      return;
     }
+
+    setIsPlaying(true);
 
     try {
       await video.play();
@@ -107,16 +133,17 @@ export function GameMediaHero({ title, media, videoSrc }: Props) {
       <div className="relative aspect-video w-full overflow-hidden bg-black">
         {videoSrc ? (
           <video
+            key={videoSrc}
             ref={videoRef}
             src={videoSrc}
             controls={isPlaying}
             playsInline
-            preload="metadata"
+            preload="auto"
             className={cn(
               "h-full w-full object-cover",
               isPlaying
-                ? "relative z-10 bg-black"
-                : "pointer-events-none absolute inset-0 opacity-0",
+                ? "relative z-20 bg-black"
+                : "pointer-events-none absolute inset-0 z-0 opacity-0",
             )}
             onEnded={stopVideo}
           />
@@ -134,20 +161,26 @@ export function GameMediaHero({ title, media, videoSrc }: Props) {
               priority
             />
             {canPlayVideo ? (
-              <div className="absolute inset-0 flex items-center justify-center bg-black/20">
+              <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/20">
                 <button
                   type="button"
                   onClick={() => void handlePlayClick()}
+                  disabled={isLoadingVideo}
                   aria-label="Reproducir vídeo"
-                  className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-white/80 bg-black/40 text-white transition-transform hover:scale-105 hover:bg-black/55"
+                  aria-busy={isLoadingVideo}
+                  className="flex h-16 w-16 items-center justify-center rounded-full border-2 border-white/80 bg-black/40 text-white transition-transform hover:scale-105 hover:bg-black/55 disabled:cursor-wait disabled:opacity-70"
                 >
-                  <svg
-                    viewBox="0 0 24 24"
-                    className="ml-1 h-8 w-8 fill-current"
-                    aria-hidden
-                  >
-                    <path d="M8 5v14l11-7z" />
-                  </svg>
+                  {isLoadingVideo ? (
+                    <span className="h-8 w-8 animate-spin rounded-full border-2 border-white/30 border-t-white" />
+                  ) : (
+                    <svg
+                      viewBox="0 0 24 24"
+                      className="ml-1 h-8 w-8 fill-current"
+                      aria-hidden
+                    >
+                      <path d="M8 5v14l11-7z" />
+                    </svg>
+                  )}
                 </button>
               </div>
             ) : null}

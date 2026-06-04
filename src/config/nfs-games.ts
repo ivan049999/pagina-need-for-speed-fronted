@@ -11,7 +11,7 @@ export const NFS_GAMES: NfsGame[] = [
   },
   {
     label: "Need for Speed™ Heat",
-    href: "https://www.ea.com/es-es/games/need-for-speed/need-for-speed-heat",
+    href: "/need-for-speed-heat",
   },
   {
     label: "Need for Speed™ Payback",
